@@ -2,6 +2,9 @@
     <string name="app_name">TodoList</string>
     <string name="login">로그인 하기</string>
     <string name="main">메인화면</string>
+    <string name="back_description">뒤로가기</string>
+    <string name="id">아이디</string>
+    <string name="password">비밀번호</string>
     
     <string-array name="composition">화면 구성
         <item>인트로</item>
