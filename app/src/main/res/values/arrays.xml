@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="composition">
+        <item>login screen</item>
+        <item>main screen</item>
+    </string-array>
+
+    <string-array name="registration_string">
+        <item>정보 입력</item>
+        <item>가입 완료</item>
+    </string-array>
+
+    <string-array name="registration_error">
+        <item>The email address is badly formatted</item>
+        <item>The email address is already in use by another account</item>
+        <item>Password should be at least 6 characters</item>
+    </string-array>
+
+    <string-array name="registration_error_message">
+        <item>이메일 형식이 올바르지 않습니다.</item>
+        <item>같은 이메일이 있습니다.</item>
+        <item>비밀번호를 6글자 이상으로 정해주세요.</item>
+    </string-array>
+
+    <string-array name="main_string">
+        <item>할 일 작성</item>
+    </string-array>
+</resources>

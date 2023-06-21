@@ -1,13 +1,17 @@
 <resources>
     <string name="app_name">TodoList</string>
-    <string name="login">로그인 하기</string>
+    <string name="do_login">로그인 하기</string>
     <string name="main">메인화면</string>
     <string name="back_description">뒤로가기</string>
-    <string name="id">아이디</string>
+    <string name="email">이메일</string>
     <string name="password">비밀번호</string>
-    
-    <string-array name="composition">화면 구성
-        <item>인트로</item>
-        <item>메인 화면</item>
-    </string-array>
+    <string name="login">로그인</string>
+    <string name="find_id">아이디 찾기</string>
+    <string name="find_password">비밀번호 찾기</string>
+    <string name="registration">회원가입</string>
+    <string name="enter_email">이메일을 입력하세요</string>
+    <string name="enter_password">비밀번호를 입력하세요</string>
+    <string name="enter_password_again">비밀번호를 다시 입력하세요</string>
+    <string name="complete_registration">회원가입 완료</string>
+    <string name="complete">완료</string>
 </resources>

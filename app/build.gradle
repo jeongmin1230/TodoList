@@ -1,14 +1,15 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'com.google.gms.google-services'
 }
 
 android {
-    namespace 'com.example.todolist'
+    namespace 'com.todo.todolist'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.example.todolist"
+        applicationId "com.todo.todolist"
         minSdk 24
         targetSdk 33
         versionCode 1
@@ -47,6 +48,8 @@ android {
 }
 
 dependencies {
+    implementation 'com.google.firebase:firebase-auth-ktx:21.0.3'
+    implementation 'com.google.firebase:firebase-database-ktx:20.0.4'
     def nav_version = "2.5.3"
 
     implementation("androidx.navigation:navigation-compose:$nav_version")
