@@ -23,6 +23,8 @@
     </string-array>
 
     <string-array name="main_string">
-        <item>할 일 작성</item>
+        <item>할 일 추가</item>
+        <item>할 일을 입력 하세요.</item>
+        <item>추가</item>
     </string-array>
 </resources>

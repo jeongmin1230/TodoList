@@ -13,7 +13,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -46,23 +45,22 @@ class Login : ComponentActivity() {
 @Composable
 fun Screen() {
     val context = LocalContext.current
-    val menuComposition = stringArrayResource(R.array.composition)
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = menuComposition[0]) {
-        composable(menuComposition[0]) {
+    NavHost(navController = navController, startDestination = "login") {
+        composable("login") {
             Column {
                 LoginScreen(navController)
             }
         }
 
-        composable(menuComposition[1]) {
+        composable("home") {
             Column {
-
+                MainScreen(navController)
             }
         }
 
-        /** 버튼 */
+        /** 텍스트 버튼 */
         composable(context.getString(R.string.find_id)) {
             Column {
                 FindIdScreen()
@@ -98,46 +96,48 @@ fun LoginScreen(navController: NavHostController) {
                 progress = progress,
             )
         }
-            TextField(
-                value = email,
-                onValueChange = {email = it},
-                placeholder = {
-                    Text(text = stringResource(id = R.string.email),
-                        style = MaterialTheme.typography.bodyMedium)
+        TextField(
+            value = email,
+            singleLine = true,
+            onValueChange = {email = it},
+            placeholder = {
+                Text(text = stringResource(id = R.string.email),
+                    style = MaterialTheme.typography.bodyMedium)
                 },
-                colors = TextFieldDefaults.textFieldColors(
-                    containerColor = Color.LightGray,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent
-                ),
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier
-                    .padding(horizontal = 8.dp)
-                    .fillMaxWidth()
+            colors = TextFieldDefaults.textFieldColors(
+                containerColor = Color.LightGray,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent
+            ),
+            shape = RoundedCornerShape(12.dp),
+            modifier = Modifier
+                .padding(horizontal = 8.dp)
+                .fillMaxWidth()
             )
         Spacer(modifier = Modifier.height(20.dp))
         TextField(
-                value = password,
-                onValueChange = {password = it},
-                placeholder = {
-                    Text(text = stringResource(id = R.string.password),
-                        style = MaterialTheme.typography.bodyMedium)
-                },
-                visualTransformation = PasswordVisualTransformation('*'),
-                colors = TextFieldDefaults.textFieldColors(
-                    containerColor = Color.LightGray,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent
-                ),
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier
-                    .padding(horizontal = 8.dp)
-                    .fillMaxWidth()
+            value = password,
+            singleLine = true,
+            onValueChange = {password = it},
+            placeholder = {
+                Text(text = stringResource(id = R.string.password),
+                    style = MaterialTheme.typography.bodyMedium)
+                          },
+            visualTransformation = PasswordVisualTransformation('*'),
+            colors = TextFieldDefaults.textFieldColors(
+                containerColor = Color.LightGray,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent
+            ),
+            shape = RoundedCornerShape(12.dp),
+            modifier = Modifier
+                .padding(horizontal = 8.dp)
+                .fillMaxWidth()
             )
         Spacer(modifier = Modifier.height(20.dp))
-        Button(onClick = { loginUser(context as Activity, email, password) },
+        Button(onClick = { loginUser(context as Activity, navController, email, password) },
                 modifier = Modifier
                     .padding(horizontal = 8.dp)
                     .fillMaxWidth()) {
@@ -165,14 +165,15 @@ fun LoginScreen(navController: NavHostController) {
     }
 }
 
-
-private fun loginUser(context: Activity, email: String, password: String) {
+private fun loginUser(context: Activity, navController: NavHostController, email: String, password: String) {
     val auth = FirebaseAuth.getInstance()
     auth.signInWithEmailAndPassword(email, password)
         .addOnCompleteListener(context) { task ->
             if (task.isSuccessful) {
+                navController.navigate("home")
                 println("로그인 성공")
             } else {
+                println(task.exception)
                 println("로그인 실패")
             }
         }
