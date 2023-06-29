@@ -1,22 +1,32 @@
 package com.todo.todolist
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringArrayResource
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 @Composable
 fun MainScreen(mainNavController: NavHostController) {
@@ -41,41 +51,51 @@ fun MainList(navController: NavHostController) {
                     .fillMaxWidth()) {
             Text(text = mainString[0])
         }
+        TodoListScreen()
     }
     if(writeOpenDialog.value) WriteTodoDialog(writeOpenDialog, mainString, navController)
 }
 
 @Composable
-fun EachTodoLayout() {
-
+fun EachTodoLayout(todo: String) {
+    var done by remember { mutableStateOf(false) }
+    Row(verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .border(1.dp, Color.LightGray)
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+            .clickable(interactionSource = MutableInteractionSource(), indication = null)  { done = !done }) {
+        Image(imageVector =
+                if(done) ImageVector.vectorResource(id = R.drawable.ic_check)
+                else ImageVector.vectorResource(id = R.drawable.ic_uncheck),
+            contentDescription = null)
+        Text(text = todo)
+    }
 }
 
 @Composable
 fun WriteTodoDialog(open: MutableState<Boolean>, mainString: Array<String>, navController: NavHostController) {
-    var title by remember { mutableStateOf("") }
+    var todo by remember { mutableStateOf("") }
         AlertDialog(
             onDismissRequest = { open.value = false },
             title = { Text(text = mainString[1])},
             text = {
                 TextField(
-                    value = title,
+                    value = todo,
                     singleLine = true,
-                    onValueChange = {title = it},
-                    placeholder = {
-                        Text(text = stringResource(id = R.string.email),
-                            style = MaterialTheme.typography.bodyMedium)
-                    },
+                    onValueChange = {todo = it},
                     colors = TextFieldDefaults.textFieldColors(containerColor = Color.LightGray, focusedIndicatorColor = Color.Transparent, unfocusedIndicatorColor = Color.Transparent, disabledIndicatorColor = Color.Transparent),
-                    modifier = Modifier
-                        .padding(horizontal = 8.dp)
-                        .fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth()
                 )
             },
             confirmButton =
             {
                 Text(text = mainString[2],
                     modifier = Modifier
-                        .clickable { /* TODO 파이어베이스 데이터베이스에 추가 */ }
+                        .clickable {
+                            open.value = false
+                            addTodo(todo)
+                        }
                         .padding(horizontal = 10.dp)
                         .fillMaxWidth(),
                     style = MaterialTheme.typography.bodyMedium.copy(textAlign = TextAlign.Center))
@@ -85,4 +105,55 @@ fun WriteTodoDialog(open: MutableState<Boolean>, mainString: Array<String>, navC
                 .padding(horizontal = 10.dp),
 
         )
+}
+
+@Composable
+fun TodoListScreen() {
+    val todoListState = remember { mutableStateOf(emptyList<String>()) }
+
+    val uid = FirebaseAuth.getInstance().currentUser?.uid
+    val usersRef = FirebaseDatabase.getInstance().getReference("todo")
+    val todoRef = usersRef.child(uid.toString()).child("todo")
+
+    // 데이터 변경 이벤트 리스너 등록
+    val valueEventListener = object : ValueEventListener {
+        override fun onDataChange(dataSnapshot: DataSnapshot) {
+            val todoList = mutableListOf<String>()
+            for (childSnapshot in dataSnapshot.children) {
+                val todoText = childSnapshot.getValue(String::class.java)
+                if (todoText != null) {
+                    todoList.add(todoText)
+                }
+            }
+            todoListState.value = todoList
+        }
+
+        override fun onCancelled(databaseError: DatabaseError) {
+            // 에러 처리 로직
+        }
+    }
+
+    todoRef.addValueEventListener(valueEventListener)
+
+    Column {
+        todoListState.value.forEach { todo ->
+            Column(modifier = Modifier.padding(all = 10.dp)) {
+                EachTodoLayout(todo)
+            }
+        }
+    }
+}
+
+
+private fun addTodo(todo: String) {
+    val uid = FirebaseAuth.getInstance().currentUser?.uid
+    val usersRef = FirebaseDatabase.getInstance().getReference("todo")
+    val todoRef = usersRef.child(uid.toString()).child("todo")
+    val todoId = todoRef.push().key
+    todoRef.child(todo)
+
+    if (todoId != null) {
+        val newTodoRef = todoRef.child(todoId)
+        newTodoRef.setValue(todo)
+    }
 }

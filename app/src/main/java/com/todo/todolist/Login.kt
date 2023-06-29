@@ -66,9 +66,9 @@ fun Screen() {
                 FindIdScreen()
             }
         }
-        composable(context.getString(R.string.find_password)) {
+        composable(context.getString(R.string.reset_password)) {
             Column {
-                FindPasswordScreen()
+                ResetPasswordScreen(navController)
             }
         }
         composable(context.getString(R.string.registration)) {
@@ -146,15 +146,10 @@ fun LoginScreen(navController: NavHostController) {
         Spacer(modifier = Modifier.height(20.dp))
         Row(verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center) {
-            Text(text = stringResource(id = R.string.find_id),
+            Text(text = stringResource(id = R.string.reset_password),
                 modifier = Modifier
                     .weight(1f)
-                    .clickable { navController.navigate(context.getString(R.string.find_id)) },
-                style = MaterialTheme.typography.bodyMedium.copy(Color.Black, textAlign = TextAlign.Center))
-            Text(text = stringResource(id = R.string.find_password),
-                modifier = Modifier
-                    .weight(1f)
-                    .clickable { navController.navigate(context.getString(R.string.find_password)) },
+                    .clickable { navController.navigate(context.getString(R.string.reset_password)) },
                 style = MaterialTheme.typography.bodyMedium.copy(Color.Black, textAlign = TextAlign.Center))
             Text(text = stringResource(id = R.string.registration),
                 modifier = Modifier
@@ -162,6 +157,7 @@ fun LoginScreen(navController: NavHostController) {
                     .clickable { navController.navigate(context.getString(R.string.registration)) },
                 style = MaterialTheme.typography.bodyMedium.copy(Color.Black, textAlign = TextAlign.Center))
         }
+        Spacer(modifier = Modifier.padding(bottom = 12.dp))
     }
 }
 

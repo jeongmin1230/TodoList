@@ -7,11 +7,14 @@
     <string name="password">비밀번호</string>
     <string name="login">로그인</string>
     <string name="find_id">아이디 찾기</string>
-    <string name="find_password">비밀번호 찾기</string>
+    <string name="reset_password">비밀번호 재설정</string>
     <string name="registration">회원가입</string>
+    <string name="sign_in_google">로그인</string>
+    <string name="enter_name">이름을 입력하세요</string>
     <string name="enter_email">이메일을 입력하세요</string>
     <string name="enter_password">비밀번호를 입력하세요</string>
     <string name="enter_password_again">비밀번호를 다시 입력하세요</string>
     <string name="complete_registration">회원가입 완료</string>
     <string name="complete">완료</string>
+    <string name="enter_email_to_reset_password">비밀번호를 재설정 할 이메일을 입력하세요</string>
 </resources>

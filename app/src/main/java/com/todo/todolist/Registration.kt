@@ -22,6 +22,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.airbnb.lottie.compose.*
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 
 @Composable
 fun RegistrationScreen(mainNavController: NavHostController) {
@@ -38,7 +39,7 @@ fun RegistrationScreen(mainNavController: NavHostController) {
         }
         composable("second") {
             Column {
-                Complete(menuComposition[0], mainNavController)
+                Complete(mainNavController)
             }
         }
     }
@@ -49,10 +50,31 @@ fun InputInformation(navController: NavHostController) {
     val context = LocalContext.current
     val errorString = stringArrayResource(id = R.array.registration_error)
     val errorMessage = stringArrayResource(id = R.array.registration_error_message)
+    var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     Column {
+        TextField(
+            value = name,
+            onValueChange = {name = it},
+            placeholder = {
+                Text(text = stringResource(id = R.string.enter_name),
+                    style = MaterialTheme.typography.bodyMedium)
+            },
+            colors = TextFieldDefaults.textFieldColors(
+                containerColor = Color.LightGray,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent
+            ),
+            shape = RoundedCornerShape(12.dp),
+            modifier = Modifier
+                .padding(horizontal = 8.dp)
+                .fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+
         TextField(
             value = email,
             onValueChange = {email = it},
@@ -113,8 +135,8 @@ fun InputInformation(navController: NavHostController) {
         )
     }
     Spacer(modifier = Modifier.height(8.dp))
-    Button(enabled = email.isNotEmpty() && password.isNotEmpty() && confirmPassword.isNotEmpty(),
-            onClick = { performSignup(errorString, errorMessage, context, navController, email, password) },
+    Button(enabled = name.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty() && confirmPassword.isNotEmpty(),
+            onClick = { performSignup(errorString, errorMessage, context, navController, name, email, password) },
             modifier = Modifier
                 .padding(horizontal = 8.dp)
                 .fillMaxWidth()) {
@@ -123,7 +145,7 @@ fun InputInformation(navController: NavHostController) {
 }
 
 @Composable
-fun Complete(destination: String, navController: NavHostController) {
+fun Complete(navController: NavHostController) {
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.complete))
     val progress by animateLottieCompositionAsState(composition = composition, iterations = LottieConstants.IterateForever)
     
@@ -137,19 +159,20 @@ fun Complete(destination: String, navController: NavHostController) {
                 progress = progress,
             )
         }
-        Button(onClick = { navController.navigate(destination) }) {
+        Button(onClick = { navController.navigate("login") }) {
             Text(text = stringResource(id = R.string.do_login))
         }
     }
 }
 
 @SuppressLint("ResourceType")
-private fun performSignup(errorString: Array<String>, errorMessage: Array<String>, context: Context, navController: NavHostController, email: String, password: String) {
+private fun performSignup(errorString: Array<String>, errorMessage: Array<String>, context: Context, navController: NavHostController, name: String, email: String, password: String) {
     val activity = context as Activity
     val auth = FirebaseAuth.getInstance()
     auth.createUserWithEmailAndPassword(email, password)
         .addOnCompleteListener { task ->
             if (task.isSuccessful) {
+                createDatabase(name, email)
                 navController.navigate("second")
             } else {
                 println(task.exception)
@@ -164,4 +187,13 @@ private fun performSignup(errorString: Array<String>, errorMessage: Array<String
                 }
             }
         }
+}
+
+private fun createDatabase(name: String, email: String) {
+    val uid = FirebaseAuth.getInstance().currentUser?.uid
+    val usersRef = FirebaseDatabase.getInstance().getReference("users")
+    val userRef = usersRef.child(uid.toString()).child("info")
+
+    userRef.child("name").setValue(name)
+    userRef.child("email").setValue(email)
 }
