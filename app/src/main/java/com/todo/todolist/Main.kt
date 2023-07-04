@@ -71,14 +71,12 @@ fun EachTodoLayout(todo: String, onTodoClicked: (String) -> Unit) {
             .clickable(interactionSource = MutableInteractionSource(), indication = null) {
                 done = !done
                 if (done) doneTodo(todo)
-                else addTodo(todo)
             }) {
         Image(imageVector =
                 if(done) ImageVector.vectorResource(id = R.drawable.ic_check)
                 else ImageVector.vectorResource(id = R.drawable.ic_uncheck),
             contentDescription = null)
         Text(text = todo,
-            style = textDecoration,
             modifier = Modifier.padding(start = 8.dp))
     }
 }
@@ -172,11 +170,32 @@ fun TodoListScreen() {
                 }
             }
         }
-        Spacer(modifier = Modifier.border(1.dp, Color.LightGray))
+        Row(verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .border(2.dp, Color.LightGray)) {
+            Text(text = "done list")
+        }
         doneTodoListState.value.forEach { done ->
             Column(modifier = Modifier.padding(all = 10.dp)) {
-                EachTodoLayout(done) {
-                    println(it)
+                var check by remember { mutableStateOf(true) }
+
+                Row(verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .border(1.dp, Color.LightGray)
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
+                        .clickable(interactionSource = MutableInteractionSource(), indication = null) {
+                            check = !check
+                            if(!check) cancelDone(done)
+                        }) {
+                    Image(imageVector =
+                    if(check) ImageVector.vectorResource(id = R.drawable.ic_check)
+                    else ImageVector.vectorResource(id = R.drawable.ic_uncheck),
+                        contentDescription = null)
+                    Text(text = done,
+                        style = TextStyle(textDecoration = TextDecoration.LineThrough),
+                        modifier = Modifier.padding(start = 8.dp))
                 }
             }
         }
@@ -238,6 +257,35 @@ private fun doneTodo(todo: String) {
     val completeId = completeRef.push().key
     if (completeId != null) {
         val newCompleteRef = completeRef.child(completeId)
+        newCompleteRef.setValue(todo)
+    }
+}
+
+private fun cancelDone(todo: String) {
+    val uid = FirebaseAuth.getInstance().currentUser?.uid
+    val usersRef = FirebaseDatabase.getInstance().getReference("todo")
+    val completeRef = usersRef.child(uid.toString()).child("complete")
+    val todoRef = usersRef.child(uid.toString()).child("todo")
+    completeRef.addListenerForSingleValueEvent(object : ValueEventListener {
+        override fun onDataChange(dataSnapshot: DataSnapshot) {
+            for (childSnapshot in dataSnapshot.children) {
+                val value = childSnapshot.getValue(String::class.java)
+                if (value == todo) {
+                    childSnapshot.ref.removeValue()
+                    break
+                }
+            }
+        }
+
+        override fun onCancelled(databaseError: DatabaseError) {
+            // 에러 처리 로직
+        }
+    })
+
+    // completeRef에 해당 todo 추가
+    val todoId = todoRef.push().key
+    if (todoId != null) {
+        val newCompleteRef = todoRef.child(todoId)
         newCompleteRef.setValue(todo)
     }
 }
