@@ -17,4 +17,7 @@
     <string name="complete_registration">회원가입 완료</string>
     <string name="complete">완료</string>
     <string name="enter_email_to_reset_password">비밀번호를 재설정 할 이메일을 입력하세요</string>
+    <string name="main_todo_list">to do list</string>
+    <string name="main_done_list">done list</string>
+    <string name="check_state">check state</string>
 </resources>

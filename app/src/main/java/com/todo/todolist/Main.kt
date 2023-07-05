@@ -1,6 +1,7 @@
 package com.todo.todolist
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -12,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -56,32 +58,6 @@ fun MainList(navController: NavHostController) {
 }
 
 @Composable
-fun EachTodoLayout(todo: String, onTodoClicked: (String) -> Unit) {
-    var done by remember { mutableStateOf(false) }
-    val textDecoration = if (done) {
-        TextStyle(textDecoration = TextDecoration.LineThrough)
-    } else {
-        TextStyle(textDecoration = TextDecoration.None)
-    }
-    Row(verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .border(1.dp, Color.LightGray)
-            .fillMaxWidth()
-            .padding(vertical = 8.dp)
-            .clickable(interactionSource = MutableInteractionSource(), indication = null) {
-                done = !done
-                if (done) doneTodo(todo)
-            }) {
-        Image(imageVector =
-                if(done) ImageVector.vectorResource(id = R.drawable.ic_check)
-                else ImageVector.vectorResource(id = R.drawable.ic_uncheck),
-            contentDescription = null)
-        Text(text = todo,
-            modifier = Modifier.padding(start = 8.dp))
-    }
-}
-
-@Composable
 fun WriteTodoDialog(open: MutableState<Boolean>, mainString: Array<String>, navController: NavHostController) {
     var todo by remember { mutableStateOf("") }
         AlertDialog(
@@ -102,7 +78,7 @@ fun WriteTodoDialog(open: MutableState<Boolean>, mainString: Array<String>, navC
                     modifier = Modifier
                         .clickable {
                             open.value = false
-                            addTodo(todo)
+                            addTodo(todo.trim())
                         }
                         .padding(horizontal = 10.dp)
                         .fillMaxWidth(),
@@ -162,47 +138,57 @@ fun TodoListScreen() {
     todoRef.addValueEventListener(valueEventListener)
     doneTodoRef.addValueEventListener(doneEventListener)
 
+    ListName(stringResource(id = R.string.main_todo_list))
+
     Column {
         todoListState.value.forEach { todo ->
-            Column(modifier = Modifier.padding(all = 10.dp)) {
-                EachTodoLayout(todo) {
-                    println(it)
-                }
+            EachList(todo, true, ImageVector.vectorResource(id = R.drawable.ic_uncheck)) {
+                doneTodo(todo)
             }
         }
-        Row(verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .border(2.dp, Color.LightGray)) {
-            Text(text = "done list")
-        }
+        ListName(stringResource(id = R.string.main_done_list))
         doneTodoListState.value.forEach { done ->
-            Column(modifier = Modifier.padding(all = 10.dp)) {
-                var check by remember { mutableStateOf(true) }
-
-                Row(verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .border(1.dp, Color.LightGray)
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp)
-                        .clickable(interactionSource = MutableInteractionSource(), indication = null) {
-                            check = !check
-                            if(!check) cancelDone(done)
-                        }) {
-                    Image(imageVector =
-                    if(check) ImageVector.vectorResource(id = R.drawable.ic_check)
-                    else ImageVector.vectorResource(id = R.drawable.ic_uncheck),
-                        contentDescription = null)
-                    Text(text = done,
-                        style = TextStyle(textDecoration = TextDecoration.LineThrough),
-                        modifier = Modifier.padding(start = 8.dp))
-                }
+            EachList(done, false, ImageVector.vectorResource(id = R.drawable.ic_check)) {
+                cancelDone(done)
             }
         }
     }
 }
 
+@Composable
+fun ListName(name: String) {
+    Row(verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.LightGray)) {
+        Text(
+            text = name,
+            style = MaterialTheme.typography.bodyMedium.copy(Color.Black, textAlign = TextAlign.Center),
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
 
+@Composable
+fun EachList(eachName:String, type: Boolean, image: ImageVector, onClick: () -> Unit) {
+    Column(modifier = Modifier.padding(all = 10.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .border(1.dp, Color.LightGray)
+                .fillMaxWidth()
+                .padding(vertical = 8.dp)
+                .clickable(
+                    interactionSource = MutableInteractionSource(),
+                    indication = null
+                ) { onClick() }) {
+            Image(imageVector = image,
+                contentDescription = stringResource(id = R.string.check_state))
+            Text(text = eachName,
+                style = TextStyle(textDecoration = if(type) TextDecoration.None else TextDecoration.LineThrough),
+                modifier = Modifier.padding(start = 8.dp))
+        }
+    }
+}
 private fun addTodo(todo: String) {
     val uid = FirebaseAuth.getInstance().currentUser?.uid
     val usersRef = FirebaseDatabase.getInstance().getReference("todo")
