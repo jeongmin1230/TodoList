@@ -35,30 +35,50 @@ fun MainScreen(mainNavController: NavHostController) {
     NavHost(navController = navController, startDestination = "first") {
         composable("first"){
             Column {
-                MainList(navController)
+                MainList()
             }
         }
     }
 }
 
 @Composable
-fun MainList(navController: NavHostController) {
+fun MainList() {
+    var isMenuOpen by remember { mutableStateOf(false) }
+
     val writeOpenDialog = remember { mutableStateOf(false) }
     val mainString = stringArrayResource(id = R.array.main_string)
     Column {
-        Button(onClick = {writeOpenDialog.value = !writeOpenDialog.value},
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Image(imageVector = ImageVector.vectorResource(id = R.drawable.ic_menu),
+                contentDescription = stringResource(id = R.string.ic_menu),
                 modifier = Modifier
+                    .clickable(
+                        interactionSource = MutableInteractionSource(),
+                        indication = null
+                    ) { isMenuOpen = !isMenuOpen }
                     .padding(horizontal = 12.dp)
-                    .fillMaxWidth()) {
-            Text(text = mainString[0])
+                )
+            Button(onClick = {writeOpenDialog.value = !writeOpenDialog.value},
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = 12.dp)) {
+                Text(text = mainString[0])
+            }
+        }
+    }
+    Row { // 몬가 이상
+        if(isMenuOpen) {
+            Column {
+                Text(text = "로그아웃")
+            }
         }
         TodoListScreen()
     }
-    if(writeOpenDialog.value) WriteTodoDialog(writeOpenDialog, mainString, navController)
+    if(writeOpenDialog.value) WriteTodoDialog(writeOpenDialog, mainString)
 }
 
 @Composable
-fun WriteTodoDialog(open: MutableState<Boolean>, mainString: Array<String>, navController: NavHostController) {
+fun WriteTodoDialog(open: MutableState<Boolean>, mainString: Array<String>) {
     var todo by remember { mutableStateOf("") }
         AlertDialog(
             onDismissRequest = { open.value = false },
@@ -138,9 +158,8 @@ fun TodoListScreen() {
     todoRef.addValueEventListener(valueEventListener)
     doneTodoRef.addValueEventListener(doneEventListener)
 
-    ListName(stringResource(id = R.string.main_todo_list))
-
     Column {
+        ListName(stringResource(id = R.string.main_todo_list))
         todoListState.value.forEach { todo ->
             EachList(todo, true, ImageVector.vectorResource(id = R.drawable.ic_uncheck)) {
                 doneTodo(todo)
@@ -182,10 +201,10 @@ fun EachList(eachName:String, type: Boolean, image: ImageVector, onClick: () -> 
                     indication = null
                 ) { onClick() }) {
             Image(imageVector = image,
-                contentDescription = stringResource(id = R.string.check_state))
+                contentDescription = stringResource(id = R.string.check_state),
+                modifier = Modifier.padding(horizontal = 8.dp))
             Text(text = eachName,
-                style = TextStyle(textDecoration = if(type) TextDecoration.None else TextDecoration.LineThrough),
-                modifier = Modifier.padding(start = 8.dp))
+                style = TextStyle(textDecoration = if(type) TextDecoration.None else TextDecoration.LineThrough),)
         }
     }
 }
