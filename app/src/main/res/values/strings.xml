@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">TodoList</string>
+    <string name="ic_menu">메뉴 아이콘</string>
     <string name="do_login">로그인 하기</string>
     <string name="main">메인화면</string>
     <string name="back_description">뒤로가기</string>
