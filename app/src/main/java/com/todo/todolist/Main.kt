@@ -30,6 +30,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun MainScreen() {
     val drawerNavController = rememberNavController()
+
     val scope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
 
@@ -40,27 +41,28 @@ fun MainScreen() {
     )
     ModalNavigationDrawer(
         drawerContent = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.LightGray)) {
+                // TODO 로그인 한 사람 이름
+                Text(text = "이정민 ")
+            }
             Column(Modifier.padding(horizontal = 12.dp)) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.LightGray)) {
-                    // TODO 로그인 한 사람 이름
-                }
-                items.forEach {item ->
+                items.forEachIndexed { _, navDrawer ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
+                            .padding(horizontal = 4.dp, vertical = 10.dp)
                             .fillMaxWidth()
                             .clickable {
                                 scope.launch { drawerState.close() }
-                                drawerNavController.navigate(item.screenRoute)
+                                drawerNavController.navigate(navDrawer.screenRoute)
                             }) {
                         Image(
-                            imageVector = ImageVector.vectorResource(item.icon),
-                            contentDescription = stringResource(id = item.title))
-                        Text(text = stringResource(id = item.title))
+                            imageVector = ImageVector.vectorResource(navDrawer.icon),
+                            contentDescription = stringResource(id = navDrawer.title))
+                        Text(text = stringResource(id = navDrawer.title))
                     }
                 }
             }
@@ -70,7 +72,9 @@ fun MainScreen() {
                 Image(
                     imageVector = ImageVector.vectorResource(id = R.drawable.ic_menu),
                     contentDescription = null,
-                    modifier = Modifier.clickable { scope.launch { drawerState.open() } }
+                    modifier = Modifier.clickable {
+                        println("open drawer")
+                        scope.launch { drawerState.open() } }
                 )
                 NavHost(navController = drawerNavController, startDestination = NavDrawer.Home.screenRoute) {
                     composable(NavDrawer.Home.screenRoute){

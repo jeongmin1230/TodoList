@@ -23,6 +23,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.airbnb.lottie.compose.*
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import com.todo.todolist.*
 import com.todo.todolist.R
 import com.todo.todolist.ui.theme.TodoListTheme
@@ -91,7 +92,7 @@ fun LoginScreen(navController: NavHostController) {
     var password by remember { mutableStateOf("") }
     Spacer(modifier = Modifier.height(40.dp))
     Column(Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally) {
+        horizontalAlignment = Alignment.CenterHorizontally) {
         Box(modifier = Modifier.size(200.dp)) {
             LottieAnimation(
                 composition = composition,
@@ -105,7 +106,7 @@ fun LoginScreen(navController: NavHostController) {
             placeholder = {
                 Text(text = stringResource(id = R.string.email),
                     style = MaterialTheme.typography.bodyMedium)
-                },
+            },
             colors = TextFieldDefaults.textFieldColors(
                 containerColor = Color.LightGray,
                 focusedIndicatorColor = Color.Transparent,
@@ -116,7 +117,7 @@ fun LoginScreen(navController: NavHostController) {
             modifier = Modifier
                 .padding(horizontal = 8.dp)
                 .fillMaxWidth()
-            )
+        )
         Spacer(modifier = Modifier.height(20.dp))
         TextField(
             value = password,
@@ -125,7 +126,7 @@ fun LoginScreen(navController: NavHostController) {
             placeholder = {
                 Text(text = stringResource(id = R.string.password),
                     style = MaterialTheme.typography.bodyMedium)
-                          },
+            },
             visualTransformation = PasswordVisualTransformation('*'),
             colors = TextFieldDefaults.textFieldColors(
                 containerColor = Color.LightGray,
@@ -137,12 +138,12 @@ fun LoginScreen(navController: NavHostController) {
             modifier = Modifier
                 .padding(horizontal = 8.dp)
                 .fillMaxWidth()
-            )
+        )
         Spacer(modifier = Modifier.height(20.dp))
         Button(onClick = { loginUser(context as Activity, navController, email, password) },
-                modifier = Modifier
-                    .padding(horizontal = 8.dp)
-                    .fillMaxWidth()) {
+            modifier = Modifier
+                .padding(horizontal = 8.dp)
+                .fillMaxWidth()) {
             Text(text = stringResource(id = R.string.login))
         }
         Spacer(modifier = Modifier.height(20.dp))
