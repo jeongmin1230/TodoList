@@ -1,4 +1,4 @@
-package com.todo.todolist
+package com.todo.todolist.screen
 
 import android.app.Activity
 import androidx.compose.foundation.layout.*
@@ -16,6 +16,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
+import com.todo.todolist.AppBar
+import com.todo.todolist.R
 
 @Composable
 fun ResetPasswordScreen(mainNavController: NavHostController) {

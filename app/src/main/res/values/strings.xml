@@ -21,4 +21,10 @@
     <string name="main_todo_list">to do list</string>
     <string name="main_done_list">done list</string>
     <string name="check_state">check state</string>
+
+    <string name="to_home">홈으로</string>
+    <string name="to_add">할 일 추가</string>
+        <string name="enter_todo">할 일을 입력 하세요.</string>
+        <string name="add_todo">추가</string>
+    <string name="to_setting">설정</string>
 </resources>
