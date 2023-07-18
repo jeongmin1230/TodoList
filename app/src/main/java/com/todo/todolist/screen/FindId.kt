@@ -1,4 +1,4 @@
-package com.todo.todolist
+package com.todo.todolist.screen
 
 import androidx.compose.runtime.Composable
 

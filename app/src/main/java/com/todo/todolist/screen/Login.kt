@@ -1,4 +1,4 @@
-package com.todo.todolist
+package com.todo.todolist.screen
 
 import android.app.Activity
 import android.os.Bundle
@@ -23,6 +23,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.airbnb.lottie.compose.*
 import com.google.firebase.auth.FirebaseAuth
+import com.todo.todolist.*
+import com.todo.todolist.R
 import com.todo.todolist.ui.theme.TodoListTheme
 
 class Login : ComponentActivity() {
@@ -56,7 +58,7 @@ fun Screen() {
 
         composable("home") {
             Column {
-                MainScreen(navController)
+                MainScreen()
             }
         }
 
@@ -163,7 +165,7 @@ fun LoginScreen(navController: NavHostController) {
 
 private fun loginUser(context: Activity, navController: NavHostController, email: String, password: String) {
     val auth = FirebaseAuth.getInstance()
-    auth.signInWithEmailAndPassword(email, password)
+    auth.signInWithEmailAndPassword(email.trim(), password.trim())
         .addOnCompleteListener(context) { task ->
             if (task.isSuccessful) {
                 navController.navigate("home")

@@ -14,7 +14,7 @@
         android:theme="@style/Theme.TodoList"
         tools:targetApi="31">
         <activity
-            android:name=".Login"
+            android:name=".screen.Login"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.TodoList">
