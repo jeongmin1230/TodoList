@@ -98,37 +98,6 @@ fun HomeScreen() {
     }
 }
 
-
-private fun doneTodo(todo: String) {
-    val uid = FirebaseAuth.getInstance().currentUser?.uid
-    val usersRef = FirebaseDatabase.getInstance().getReference("todo")
-    val todoRef = usersRef.child(uid.toString()).child("todo")
-    val completeRef = usersRef.child(uid.toString()).child("complete")
-    // todoRef에서 해당 todo 제거
-    todoRef.addListenerForSingleValueEvent(object : ValueEventListener {
-        override fun onDataChange(dataSnapshot: DataSnapshot) {
-            for (childSnapshot in dataSnapshot.children) {
-                val value = childSnapshot.getValue(String::class.java)
-                if (value == todo) {
-                    childSnapshot.ref.removeValue()
-                    break
-                }
-            }
-        }
-
-        override fun onCancelled(databaseError: DatabaseError) {
-            // 에러 처리 로직
-        }
-    })
-
-    // completeRef에 해당 todo 추가
-    val completeId = completeRef.push().key
-    if (completeId != null) {
-        val newCompleteRef = completeRef.child(completeId)
-        newCompleteRef.setValue(todo)
-    }
-}
-
 @Composable
 fun ListName(name: String) {
     Row(verticalAlignment = Alignment.CenterVertically,
@@ -158,6 +127,35 @@ fun EachList(eachName:String, type: Boolean, image: ImageVector, onClick: () -> 
                 style = TextStyle(textDecoration = if(type) TextDecoration.None else TextDecoration.LineThrough),
                 modifier = Modifier.padding(start = 8.dp))
         }
+    }
+}
+
+
+private fun doneTodo(todo: String) {
+    val uid = FirebaseAuth.getInstance().currentUser?.uid
+    val usersRef = FirebaseDatabase.getInstance().getReference("todo")
+    val todoRef = usersRef.child(uid.toString()).child("todo")
+    val completeRef = usersRef.child(uid.toString()).child("complete")
+    todoRef.addListenerForSingleValueEvent(object : ValueEventListener {
+        override fun onDataChange(dataSnapshot: DataSnapshot) {
+            for (childSnapshot in dataSnapshot.children) {
+                val value = childSnapshot.getValue(String::class.java)
+                if (value == todo) {
+                    childSnapshot.ref.removeValue()
+                    break
+                }
+            }
+        }
+
+        override fun onCancelled(databaseError: DatabaseError) {
+            // 에러 처리 로직
+        }
+    })
+
+    val completeId = completeRef.push().key
+    if (completeId != null) {
+        val newCompleteRef = completeRef.child(completeId)
+        newCompleteRef.setValue(todo)
     }
 }
 
