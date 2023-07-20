@@ -1,4 +1,4 @@
-package com.todo.todolist
+package com.todo.todolist.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import com.todo.todolist.R
 
 @Composable
 fun AppBar(text: String, onBackClick: () -> Unit) {
@@ -28,8 +29,7 @@ fun AppBar(text: String, onBackClick: () -> Unit) {
             contentDescription = stringResource(id = R.string.back_description),
             modifier = Modifier
                 .padding(horizontal = 12.dp)
-                .clickable(interactionSource = MutableInteractionSource(), indication = null)
-                { onBackClick() })
+                .clickable(interactionSource = MutableInteractionSource(), indication = null) { onBackClick() })
         Text(text = text,
             style = MaterialTheme.typography.bodyLarge.copy(Color.Black))
     }

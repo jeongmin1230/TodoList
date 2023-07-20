@@ -23,7 +23,6 @@ import androidx.navigation.compose.rememberNavController
 import com.airbnb.lottie.compose.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
-import com.todo.todolist.AppBar
 import com.todo.todolist.R
 
 @Composable

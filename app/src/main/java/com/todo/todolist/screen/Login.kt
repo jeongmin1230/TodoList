@@ -23,6 +23,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.airbnb.lottie.compose.*
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.todo.todolist.*
 import com.todo.todolist.R
 import com.todo.todolist.ui.theme.TodoListTheme
@@ -168,6 +172,9 @@ private fun loginUser(context: Activity, navController: NavHostController, email
     auth.signInWithEmailAndPassword(email.trim(), password.trim())
         .addOnCompleteListener(context) { task ->
             if (task.isSuccessful) {
+                val user = auth.currentUser
+                val uid = user?.uid ?: ""
+                getUserData(uid)
                 navController.navigate("home")
                 println("로그인 성공")
             } else {
@@ -175,4 +182,27 @@ private fun loginUser(context: Activity, navController: NavHostController, email
                 println("로그인 실패")
             }
         }
+}
+
+private fun getUserData(uid: String) {
+    val usersRef = FirebaseDatabase.getInstance().getReference("users")
+    val userRef = usersRef.child(uid).child("users")
+
+    val valueEventListener = object : ValueEventListener {
+        override fun onDataChange(snapshot: DataSnapshot) {
+            val userData = mutableListOf<String>()
+            for(childSnapshot in snapshot.children) {
+                val userText = childSnapshot.getValue(String::class.java)
+                if(userText != null) {
+                    println("userText $userText")
+                }
+            }
+        }
+
+        override fun onCancelled(error: DatabaseError) {
+            TODO("Not yet implemented")
+        }
+
+    }
+    userRef.addValueEventListener(valueEventListener)
 }
