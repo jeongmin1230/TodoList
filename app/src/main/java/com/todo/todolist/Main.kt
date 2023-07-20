@@ -30,6 +30,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun MainScreen() {
     val drawerNavController = rememberNavController()
+    val navController = rememberNavController()
+
     val scope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
 
@@ -39,30 +41,37 @@ fun MainScreen() {
         NavDrawer.Setting
     )
     ModalNavigationDrawer(
+        drawerState = drawerState,
         drawerContent = {
-            Column(Modifier.padding(horizontal = 12.dp)) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.LightGray)) {
-                    // TODO 로그인 한 사람 이름
-                }
-                items.forEach {item ->
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                scope.launch { drawerState.close() }
-                                drawerNavController.navigate(item.screenRoute)
-                            }) {
-                        Image(
-                            imageVector = ImageVector.vectorResource(item.icon),
-                            contentDescription = stringResource(id = item.title))
-                        Text(text = stringResource(id = item.title))
+            Column(
+                modifier = Modifier
+                    .background(Color.White)
+                    .fillMaxWidth()
+            ) {
+                Column(modifier = Modifier
+                    .padding(start = 10.dp)
+                    .fillMaxWidth()) {
+                    Text(text = "_ 님")
+                    Divider(Modifier.border(1.dp, Color.LightGray))
+                    items.forEachIndexed { _, item ->
+                        Row(
+                            modifier = Modifier
+                                .clickable {
+                                    scope.launch { drawerState.close() }
+                                    drawerNavController.navigate(item.screenRoute)
+                                }
+                                .padding(vertical = 12.dp)
+                                .fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Image(
+                                imageVector = ImageVector.vectorResource(item.icon),
+                                contentDescription = stringResource(id = item.title))
+                            Text(text = stringResource(id = item.title))
+                        }
                     }
                 }
+
             }
         },
         content = {
@@ -70,26 +79,21 @@ fun MainScreen() {
                 Image(
                     imageVector = ImageVector.vectorResource(id = R.drawable.ic_menu),
                     contentDescription = null,
-                    modifier = Modifier.clickable { scope.launch { drawerState.open() } }
+                    modifier = Modifier
+                        .padding(start = 10.dp, top = 10.dp)
+                        .clickable { scope.launch { drawerState.open() } }
                 )
-                NavHost(navController = drawerNavController, startDestination = NavDrawer.Home.screenRoute) {
-                    composable(NavDrawer.Home.screenRoute){
-                        Column {
-                            HomeScreen()
-                        }
+                NavHost(drawerNavController, startDestination = NavDrawer.Home.screenRoute) {
+                    composable(NavDrawer.Home.screenRoute) {
+                        HomeScreen()
                     }
                     composable(NavDrawer.Add.screenRoute) {
-                        Column {
-                            AddScreen(drawerNavController)
-                        }
+                        AddScreen(navController)
                     }
                     composable(NavDrawer.Setting.screenRoute) {
-                        Column {
-                            SettingScreen()
-                        }
+                        SettingScreen()
                     }
                 }
             }
-        }
-    )
+        })
 }

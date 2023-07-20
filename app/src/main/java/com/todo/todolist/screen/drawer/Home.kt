@@ -33,7 +33,6 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.todo.todolist.R
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen() {
 
@@ -82,9 +81,9 @@ fun HomeScreen() {
     todoRef.addValueEventListener(valueEventListener)
     doneTodoRef.addValueEventListener(doneEventListener)
 
-    ListName(stringResource(id = R.string.main_todo_list))
 
-    Column {
+    Column(Modifier.padding(top = 10.dp)) {
+        ListName(stringResource(id = R.string.main_todo_list))
         todoListState.value.forEach { todo ->
             EachList(todo, true, ImageVector.vectorResource(id = R.drawable.ic_uncheck)) {
                 doneTodo(todo)
