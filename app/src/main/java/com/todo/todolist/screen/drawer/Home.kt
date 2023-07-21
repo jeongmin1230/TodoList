@@ -35,7 +35,6 @@ import com.todo.todolist.R
 
 @Composable
 fun HomeScreen() {
-
     val todoListState = remember { mutableStateOf(emptyList<String>()) }
     val doneTodoListState = remember { mutableStateOf(emptyList<String>()) }
 

@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -14,6 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -119,7 +122,10 @@ fun LoginScreen(navController: NavHostController) {
             shape = RoundedCornerShape(12.dp),
             modifier = Modifier
                 .padding(horizontal = 8.dp)
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email,
+                imeAction = ImeAction.Next)
             )
         Spacer(modifier = Modifier.height(20.dp))
         TextField(
@@ -140,7 +146,11 @@ fun LoginScreen(navController: NavHostController) {
             shape = RoundedCornerShape(12.dp),
             modifier = Modifier
                 .padding(horizontal = 8.dp)
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Done
+            )
             )
         Spacer(modifier = Modifier.height(20.dp))
         Button(onClick = { loginUser(context as Activity, navController, email, password) },
@@ -174,35 +184,42 @@ private fun loginUser(context: Activity, navController: NavHostController, email
             if (task.isSuccessful) {
                 val user = auth.currentUser
                 val uid = user?.uid ?: ""
-                getUserData(uid)
-                navController.navigate("home")
-                println("로그인 성공")
+                getUserData(uid, navController)
             } else {
                 println(task.exception)
-                println("로그인 실패")
             }
         }
 }
 
-private fun getUserData(uid: String) {
-    val usersRef = FirebaseDatabase.getInstance().getReference("users")
-    val userRef = usersRef.child(uid).child("users")
+private fun getUserData(uid: String, navController: NavHostController) {
+    val userUid = FirebaseDatabase.getInstance().getReference("users")
+    val userEmailRef = userUid.child(uid).child("info").child("email")
+    val userNameRef = userUid.child(uid).child("info").child("name")
 
-    val valueEventListener = object : ValueEventListener {
+    userEmailRef.addListenerForSingleValueEvent(object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
-            val userData = mutableListOf<String>()
-            for(childSnapshot in snapshot.children) {
-                val userText = childSnapshot.getValue(String::class.java)
-                if(userText != null) {
-                    println("userText $userText")
-                }
+            val email = snapshot.getValue(String::class.java)
+            if (email != null) {
+                UserInfo.userEmail = email
+
+                userNameRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val name = snapshot.getValue(String::class.java)
+                        if (name != null) {
+                            UserInfo.userName = name
+                            if (UserInfo.userEmail.isNotEmpty() && UserInfo.userName.isNotEmpty()) {
+                                navController.navigate("home")
+                            }
+                        }
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                    }
+                })
             }
         }
 
         override fun onCancelled(error: DatabaseError) {
-            TODO("Not yet implemented")
         }
-
-    }
-    userRef.addValueEventListener(valueEventListener)
+    })
 }
