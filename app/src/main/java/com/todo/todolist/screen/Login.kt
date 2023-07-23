@@ -98,7 +98,7 @@ fun LoginScreen(navController: NavHostController) {
     var password by remember { mutableStateOf("") }
     Spacer(modifier = Modifier.height(40.dp))
     Column(Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally) {
+        horizontalAlignment = Alignment.CenterHorizontally) {
         Box(modifier = Modifier.size(200.dp)) {
             LottieAnimation(
                 composition = composition,
@@ -112,7 +112,7 @@ fun LoginScreen(navController: NavHostController) {
             placeholder = {
                 Text(text = stringResource(id = R.string.email),
                     style = MaterialTheme.typography.bodyMedium)
-                },
+            },
             colors = TextFieldDefaults.textFieldColors(
                 containerColor = Color.LightGray,
                 focusedIndicatorColor = Color.Transparent,
@@ -126,7 +126,7 @@ fun LoginScreen(navController: NavHostController) {
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Next)
-            )
+        )
         Spacer(modifier = Modifier.height(20.dp))
         TextField(
             value = password,
@@ -135,7 +135,7 @@ fun LoginScreen(navController: NavHostController) {
             placeholder = {
                 Text(text = stringResource(id = R.string.password),
                     style = MaterialTheme.typography.bodyMedium)
-                          },
+            },
             visualTransformation = PasswordVisualTransformation('*'),
             colors = TextFieldDefaults.textFieldColors(
                 containerColor = Color.LightGray,
@@ -151,12 +151,12 @@ fun LoginScreen(navController: NavHostController) {
                 keyboardType = KeyboardType.Text,
                 imeAction = ImeAction.Done
             )
-            )
+        )
         Spacer(modifier = Modifier.height(20.dp))
         Button(onClick = { loginUser(context as Activity, navController, email, password) },
-                modifier = Modifier
-                    .padding(horizontal = 8.dp)
-                    .fillMaxWidth()) {
+            modifier = Modifier
+                .padding(horizontal = 8.dp)
+                .fillMaxWidth()) {
             Text(text = stringResource(id = R.string.login))
         }
         Spacer(modifier = Modifier.height(20.dp))

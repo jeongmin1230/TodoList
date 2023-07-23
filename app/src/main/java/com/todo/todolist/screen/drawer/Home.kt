@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.DrawerState
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -118,7 +116,7 @@ fun EachList(eachName:String, type: Boolean, image: ImageVector, onClick: () -> 
             modifier = Modifier
                 .border(1.dp, Color.LightGray)
                 .fillMaxWidth()
-                .padding(vertical = 8.dp)
+                .padding(all = 8.dp)
                 .clickable(interactionSource = MutableInteractionSource(), indication = null) { onClick() }) {
             Image(imageVector = image,
                 contentDescription = stringResource(id = R.string.check_state))
