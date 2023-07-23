@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,8 +32,10 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.todo.todolist.R
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen() {
+
     val todoListState = remember { mutableStateOf(emptyList<String>()) }
     val doneTodoListState = remember { mutableStateOf(emptyList<String>()) }
 
@@ -78,9 +81,9 @@ fun HomeScreen() {
     todoRef.addValueEventListener(valueEventListener)
     doneTodoRef.addValueEventListener(doneEventListener)
 
+    ListName(stringResource(id = R.string.main_todo_list))
 
-    Column(Modifier.padding(top = 10.dp)) {
-        ListName(stringResource(id = R.string.main_todo_list))
+    Column {
         todoListState.value.forEach { todo ->
             EachList(todo, true, ImageVector.vectorResource(id = R.drawable.ic_uncheck)) {
                 doneTodo(todo)
@@ -116,7 +119,7 @@ fun EachList(eachName:String, type: Boolean, image: ImageVector, onClick: () -> 
             modifier = Modifier
                 .border(1.dp, Color.LightGray)
                 .fillMaxWidth()
-                .padding(all = 8.dp)
+                .padding(vertical = 8.dp)
                 .clickable(interactionSource = MutableInteractionSource(), indication = null) { onClick() }) {
             Image(imageVector = image,
                 contentDescription = stringResource(id = R.string.check_state))
@@ -127,12 +130,12 @@ fun EachList(eachName:String, type: Boolean, image: ImageVector, onClick: () -> 
     }
 }
 
-
 private fun doneTodo(todo: String) {
     val uid = FirebaseAuth.getInstance().currentUser?.uid
     val usersRef = FirebaseDatabase.getInstance().getReference("todo")
     val todoRef = usersRef.child(uid.toString()).child("todo")
     val completeRef = usersRef.child(uid.toString()).child("complete")
+    // todoRef에서 해당 todo 제거
     todoRef.addListenerForSingleValueEvent(object : ValueEventListener {
         override fun onDataChange(dataSnapshot: DataSnapshot) {
             for (childSnapshot in dataSnapshot.children) {
@@ -149,6 +152,7 @@ private fun doneTodo(todo: String) {
         }
     })
 
+    // completeRef에 해당 todo 추가
     val completeId = completeRef.push().key
     if (completeId != null) {
         val newCompleteRef = completeRef.child(completeId)
