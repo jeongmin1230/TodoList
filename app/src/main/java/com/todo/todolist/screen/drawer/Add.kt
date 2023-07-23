@@ -27,7 +27,9 @@ fun AddScreen(drawerNavController: NavHostController) {
             singleLine = true,
             onValueChange = {todo = it},
             colors = TextFieldDefaults.textFieldColors(containerColor = Color.LightGray, focusedIndicatorColor = Color.Transparent, unfocusedIndicatorColor = Color.Transparent, disabledIndicatorColor = Color.Transparent),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .padding(horizontal = 10.dp)
+                .fillMaxWidth()
         )
 
         Button(onClick = {

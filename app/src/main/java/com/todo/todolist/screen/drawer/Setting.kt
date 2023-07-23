@@ -73,7 +73,7 @@ fun SettingScreen() {
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 context.startActivity(intent)
                 Toast.makeText(context, context.getString(R.string.logout_apply), Toast.LENGTH_SHORT).show()
-                            },
+            },
             dismissAction = {showConfirmDialog = false}
         )
     }
