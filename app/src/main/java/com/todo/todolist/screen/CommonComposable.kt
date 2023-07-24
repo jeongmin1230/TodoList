@@ -66,9 +66,9 @@ fun ConfirmDialog(onDismiss: () -> Unit, content: String, confirmAction: () -> U
         onDismissRequest = onDismiss,
         text = {
             Column(modifier = Modifier.fillMaxWidth()) {
-                    Text(
-                        text = content
-                    )
+                Text(
+                    text = content
+                )
             }
         },
         containerColor = Color.White,
@@ -76,7 +76,7 @@ fun ConfirmDialog(onDismiss: () -> Unit, content: String, confirmAction: () -> U
             Text(text = stringResource(id = R.string.yes),
                 style = MaterialTheme.typography.bodyMedium.copy(Color.Red),
                 modifier = Modifier.clickable { confirmAction() })
-                        },
+        },
         dismissButton = {
             Text(text = stringResource(id = R.string.no),
                 style = MaterialTheme.typography.bodyMedium.copy(Color.DarkGray),
