@@ -161,6 +161,7 @@ fun EachList(isDone: Boolean, eachName:String, type: Boolean, image: ImageVector
     }
 }
 
+
 private fun doneTodo(todo: String) {
     val uid = FirebaseAuth.getInstance().currentUser?.uid
     val usersRef = FirebaseDatabase.getInstance().getReference("todo")
