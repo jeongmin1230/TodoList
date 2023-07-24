@@ -80,6 +80,8 @@ fun HomeScreen() {
 
 
     Column(Modifier.padding(top = 10.dp)) {
+        Text(text = stringResource(id = R.string.home),
+            style = MaterialTheme.typography.bodyMedium.copy(Color.Black))
         ListName(stringResource(id = R.string.main_todo_list))
         todoListState.value.forEach { todo ->
             EachList(todo, true, ImageVector.vectorResource(id = R.drawable.ic_uncheck)) {

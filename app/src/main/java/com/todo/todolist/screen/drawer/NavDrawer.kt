@@ -11,5 +11,5 @@ sealed class NavDrawer(
 ) {
     object Home: NavDrawer(R.string.to_home, R.drawable.ic_home, HOME)
     object Add: NavDrawer(R.string.to_add, R.drawable.ic_add, ADD)
-    object Setting: NavDrawer(R.string.to_setting, R.drawable.ic_setting, SETTING)
+    object Setting: NavDrawer(R.string.setting, R.drawable.ic_setting, SETTING)
 }

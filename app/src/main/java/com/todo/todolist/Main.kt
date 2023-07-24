@@ -24,7 +24,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun MainScreen() {
     val drawerNavController = rememberNavController()
-    val navController = rememberNavController()
 
     val scope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
@@ -93,7 +92,7 @@ fun MainScreen() {
                         HomeScreen()
                     }
                     composable(NavDrawer.Add.screenRoute) {
-                        AddScreen(navController)
+                        AddScreen(drawerNavController)
                     }
                     composable(NavDrawer.Setting.screenRoute) {
                         SettingScreen()

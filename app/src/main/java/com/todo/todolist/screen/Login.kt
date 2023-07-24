@@ -55,7 +55,6 @@ class Login : ComponentActivity() {
 fun Screen() {
     val context = LocalContext.current
     val navController = rememberNavController()
-
     NavHost(navController = navController, startDestination = "login") {
         composable("login") {
             Column {
@@ -177,13 +176,12 @@ fun LoginScreen(navController: NavHostController) {
     }
 }
 
-private fun loginUser(context: Activity, navController: NavHostController, email: String, password: String) {
+private fun loginUser(activity: Activity, navController: NavHostController, email: String, password: String) {
     val auth = FirebaseAuth.getInstance()
     auth.signInWithEmailAndPassword(email.trim(), password.trim())
-        .addOnCompleteListener(context) { task ->
+        .addOnCompleteListener(activity) { task ->
             if (task.isSuccessful) {
-                val user = auth.currentUser
-                val uid = user?.uid ?: ""
+                val uid = auth.currentUser?.uid ?: ""
                 getUserData(uid, navController)
             } else {
                 println(task.exception)
