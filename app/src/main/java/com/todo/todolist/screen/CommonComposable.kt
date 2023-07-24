@@ -62,3 +62,4 @@ fun ConfirmDialog(onDismiss: () -> Unit, content: String, confirmAction: () -> U
         modifier = Modifier.padding(horizontal = 10.dp)
     )
 }
+

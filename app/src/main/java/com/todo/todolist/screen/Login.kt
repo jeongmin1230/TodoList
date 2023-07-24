@@ -55,7 +55,6 @@ class Login : ComponentActivity() {
 fun Screen() {
     val context = LocalContext.current
     val navController = rememberNavController()
-
     NavHost(navController = navController, startDestination = "login") {
         composable("login") {
             Column {
@@ -189,8 +188,7 @@ private fun loginUser(activity: Activity, navController: NavHostController, emai
     auth.signInWithEmailAndPassword(email.trim(), password.trim())
         .addOnCompleteListener(activity) { task ->
             if (task.isSuccessful) {
-                val user = auth.currentUser
-                val uid = user?.uid ?: ""
+                val uid = auth.currentUser?.uid ?: ""
                 getUserData(uid, navController)
             } else println(task.exception)
         }
