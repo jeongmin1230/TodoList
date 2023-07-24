@@ -1,9 +1,6 @@
 package com.todo.todolist.screen.drawer
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -79,7 +76,9 @@ fun HomeScreen() {
     doneTodoRef.addValueEventListener(doneEventListener)
 
 
-    Column(Modifier.padding(top = 10.dp)) {
+    Column(modifier = Modifier
+        .verticalScroll(rememberScrollState())
+        .padding(top = 10.dp)) {
         Text(text = stringResource(id = R.string.home),
             style = MaterialTheme.typography.bodyMedium.copy(Color.Black))
         ListName(stringResource(id = R.string.main_todo_list))
@@ -119,7 +118,10 @@ fun EachList(eachName:String, type: Boolean, image: ImageVector, onClick: () -> 
                 .border(1.dp, Color.LightGray)
                 .fillMaxWidth()
                 .padding(all = 8.dp)
-                .clickable(interactionSource = MutableInteractionSource(), indication = null) { onClick() }) {
+                .clickable(
+                    interactionSource = MutableInteractionSource(),
+                    indication = null
+                ) { onClick() }) {
             Image(imageVector = image,
                 contentDescription = stringResource(id = R.string.check_state))
             Text(text = eachName,

@@ -89,6 +89,7 @@ fun Screen() {
 
 @Composable
 fun LoginScreen(navController: NavHostController) {
+    var loading by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.to_do))
     val progress by animateLottieCompositionAsState(composition = composition, iterations = LottieConstants.IterateForever)
@@ -96,6 +97,7 @@ fun LoginScreen(navController: NavHostController) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     Spacer(modifier = Modifier.height(40.dp))
+
     Column(Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally) {
         Box(modifier = Modifier.size(200.dp)) {
@@ -174,6 +176,7 @@ fun LoginScreen(navController: NavHostController) {
         }
         Spacer(modifier = Modifier.padding(bottom = 12.dp))
     }
+    LoadingDialog(loading)
 }
 
 private fun loginUser(activity: Activity, navController: NavHostController, email: String, password: String) {
