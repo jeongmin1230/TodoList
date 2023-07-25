@@ -89,7 +89,6 @@ fun Screen() {
 
 @Composable
 fun LoginScreen(navController: NavHostController) {
-    var loading by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.to_do))
     val progress by animateLottieCompositionAsState(composition = composition, iterations = LottieConstants.IterateForever)
@@ -99,7 +98,7 @@ fun LoginScreen(navController: NavHostController) {
     Spacer(modifier = Modifier.height(40.dp))
 
     Column(Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally) {
+        horizontalAlignment = Alignment.CenterHorizontally) {
         Box(modifier = Modifier.size(200.dp)) {
             LottieAnimation(
                 composition = composition,
@@ -113,7 +112,7 @@ fun LoginScreen(navController: NavHostController) {
             placeholder = {
                 Text(text = stringResource(id = R.string.email),
                     style = MaterialTheme.typography.bodyMedium)
-                },
+            },
             colors = TextFieldDefaults.textFieldColors(
                 containerColor = Color.LightGray,
                 focusedIndicatorColor = Color.Transparent,
@@ -127,7 +126,7 @@ fun LoginScreen(navController: NavHostController) {
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Next)
-            )
+        )
         Spacer(modifier = Modifier.height(20.dp))
         TextField(
             value = password,
@@ -136,7 +135,7 @@ fun LoginScreen(navController: NavHostController) {
             placeholder = {
                 Text(text = stringResource(id = R.string.password),
                     style = MaterialTheme.typography.bodyMedium)
-                          },
+            },
             visualTransformation = PasswordVisualTransformation('*'),
             colors = TextFieldDefaults.textFieldColors(
                 containerColor = Color.LightGray,
@@ -152,7 +151,7 @@ fun LoginScreen(navController: NavHostController) {
                 keyboardType = KeyboardType.Text,
                 imeAction = ImeAction.Done
             )
-            )
+        )
         Spacer(modifier = Modifier.height(20.dp))
         Button(
             enabled = email.isNotEmpty() && password.isNotEmpty(),
@@ -183,7 +182,6 @@ fun LoginScreen(navController: NavHostController) {
         }
         Spacer(modifier = Modifier.padding(bottom = 12.dp))
     }
-    LoadingDialog(loading)
 }
 
 private fun loginUser(activity: Activity, navController: NavHostController, email: String, password: String) {
