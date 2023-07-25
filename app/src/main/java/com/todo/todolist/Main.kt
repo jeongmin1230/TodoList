@@ -93,7 +93,7 @@ fun MainScreen() {
                         HomeScreen()
                     }
                     composable(NavDrawer.Add.screenRoute) {
-                        AddScreen(navController)
+                        AddScreen(drawerNavController)
                     }
                     composable(NavDrawer.Setting.screenRoute) {
                         SettingScreen()
