@@ -2,6 +2,7 @@ package com.todo.todolist.screen
 
 import android.app.Activity
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
@@ -154,10 +155,17 @@ fun LoginScreen(navController: NavHostController) {
             )
         )
         Spacer(modifier = Modifier.height(20.dp))
-        Button(onClick = { loginUser(context as Activity, navController, email, password) },
+        Button(
+            enabled = email.isNotEmpty() && password.isNotEmpty(),
+            onClick = { loginUser(context as Activity, navController, email, password) },
             modifier = Modifier
                 .padding(horizontal = 8.dp)
-                .fillMaxWidth()) {
+                .fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                disabledContainerColor = Color.LightGray
+            ),
+            ) {
             Text(text = stringResource(id = R.string.login))
         }
         Spacer(modifier = Modifier.height(20.dp))
@@ -186,9 +194,7 @@ private fun loginUser(activity: Activity, navController: NavHostController, emai
             if (task.isSuccessful) {
                 val uid = auth.currentUser?.uid ?: ""
                 getUserData(uid, navController)
-            } else {
-                println(task.exception)
-            }
+            } else println(task.exception)
         }
 }
 
