@@ -4,6 +4,7 @@ import android.app.Activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -89,7 +90,7 @@ fun Screen() {
 
 @Composable
 fun LoginScreen(navController: NavHostController) {
-    var loading by remember { mutableStateOf(false) }
+    val loading = remember { mutableStateOf(false) }
     val context = LocalContext.current
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.to_do))
     val progress by animateLottieCompositionAsState(composition = composition, iterations = LottieConstants.IterateForever)
@@ -97,102 +98,124 @@ fun LoginScreen(navController: NavHostController) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     Spacer(modifier = Modifier.height(40.dp))
+    Box {
+        Column(Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally) {
+            Box(modifier = Modifier.size(200.dp)) {
+                LottieAnimation(
+                    composition = composition,
+                    progress = progress,
+                )
+            }
+            TextField(
+                value = email,
+                singleLine = true,
+                onValueChange = {email = it},
+                placeholder = {
+                    Text(text = stringResource(id = R.string.email),
+                        style = MaterialTheme.typography.bodyMedium)
+                },
+                colors = TextFieldDefaults.textFieldColors(
+                    containerColor = Color.LightGray,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent
+                ),
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
+                    .fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Email,
+                    imeAction = ImeAction.Next)
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+            TextField(
+                value = password,
+                singleLine = true,
+                onValueChange = {password = it},
+                placeholder = {
+                    Text(text = stringResource(id = R.string.password),
+                        style = MaterialTheme.typography.bodyMedium)
+                },
+                visualTransformation = PasswordVisualTransformation('*'),
+                colors = TextFieldDefaults.textFieldColors(
+                    containerColor = Color.LightGray,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent
+                ),
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
+                    .fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Done
+                )
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+            Button(onClick = {
+                loading.value = true
+                loginUser(context as Activity, navController, email, password, loading) },
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
+                    .fillMaxWidth()) {
+                Text(text = stringResource(id = R.string.login))
+            }
+            Spacer(modifier = Modifier.height(20.dp))
+            Row(verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center) {
+                Text(text = stringResource(id = R.string.reset_password),
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable { navController.navigate(context.getString(R.string.reset_password)) },
+                    style = MaterialTheme.typography.bodyMedium.copy(Color.Black, textAlign = TextAlign.Center))
+                Text(text = stringResource(id = R.string.registration),
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable { navController.navigate(context.getString(R.string.registration)) },
+                    style = MaterialTheme.typography.bodyMedium.copy(Color.Black, textAlign = TextAlign.Center))
+            }
+            Spacer(modifier = Modifier.padding(bottom = 12.dp))
+        }
+    }
 
-    Column(Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally) {
-        Box(modifier = Modifier.size(200.dp)) {
+}
+
+@Composable
+fun Loading(loading: MutableState<Boolean>) {
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loading))
+    val progress by animateLottieCompositionAsState(composition = composition, iterations = LottieConstants.IterateForever)
+
+    if(loading.value) {
+        Box(modifier = Modifier
+            .size(250.dp)
+            .background(Color.Transparent)
+        ) {
             LottieAnimation(
                 composition = composition,
                 progress = progress,
             )
         }
-        TextField(
-            value = email,
-            singleLine = true,
-            onValueChange = {email = it},
-            placeholder = {
-                Text(text = stringResource(id = R.string.email),
-                    style = MaterialTheme.typography.bodyMedium)
-            },
-            colors = TextFieldDefaults.textFieldColors(
-                containerColor = Color.LightGray,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                disabledIndicatorColor = Color.Transparent
-            ),
-            shape = RoundedCornerShape(12.dp),
-            modifier = Modifier
-                .padding(horizontal = 8.dp)
-                .fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Email,
-                imeAction = ImeAction.Next)
-        )
-        Spacer(modifier = Modifier.height(20.dp))
-        TextField(
-            value = password,
-            singleLine = true,
-            onValueChange = {password = it},
-            placeholder = {
-                Text(text = stringResource(id = R.string.password),
-                    style = MaterialTheme.typography.bodyMedium)
-            },
-            visualTransformation = PasswordVisualTransformation('*'),
-            colors = TextFieldDefaults.textFieldColors(
-                containerColor = Color.LightGray,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                disabledIndicatorColor = Color.Transparent
-            ),
-            shape = RoundedCornerShape(12.dp),
-            modifier = Modifier
-                .padding(horizontal = 8.dp)
-                .fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Done
-            )
-        )
-        Spacer(modifier = Modifier.height(20.dp))
-        Button(onClick = { loginUser(context as Activity, navController, email, password) },
-            modifier = Modifier
-                .padding(horizontal = 8.dp)
-                .fillMaxWidth()) {
-            Text(text = stringResource(id = R.string.login))
-        }
-        Spacer(modifier = Modifier.height(20.dp))
-        Row(verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center) {
-            Text(text = stringResource(id = R.string.reset_password),
-                modifier = Modifier
-                    .weight(1f)
-                    .clickable { navController.navigate(context.getString(R.string.reset_password)) },
-                style = MaterialTheme.typography.bodyMedium.copy(Color.Black, textAlign = TextAlign.Center))
-            Text(text = stringResource(id = R.string.registration),
-                modifier = Modifier
-                    .weight(1f)
-                    .clickable { navController.navigate(context.getString(R.string.registration)) },
-                style = MaterialTheme.typography.bodyMedium.copy(Color.Black, textAlign = TextAlign.Center))
-        }
-        Spacer(modifier = Modifier.padding(bottom = 12.dp))
     }
-    LoadingDialog(loading)
 }
 
-private fun loginUser(activity: Activity, navController: NavHostController, email: String, password: String) {
+private fun loginUser(activity: Activity, navController: NavHostController, email: String, password: String, loading: MutableState<Boolean>) {
+    loading.value = true
     val auth = FirebaseAuth.getInstance()
     auth.signInWithEmailAndPassword(email.trim(), password.trim())
         .addOnCompleteListener(activity) { task ->
             if (task.isSuccessful) {
                 val uid = auth.currentUser?.uid ?: ""
-                getUserData(uid, navController)
+                getUserData(uid, navController, loading)
             } else {
                 println(task.exception)
             }
         }
 }
 
-private fun getUserData(uid: String, navController: NavHostController) {
+private fun getUserData(uid: String, navController: NavHostController, loading: MutableState<Boolean>) {
     val userUid = FirebaseDatabase.getInstance().getReference("users")
     val userEmailRef = userUid.child(uid).child("info").child("email")
     val userNameRef = userUid.child(uid).child("info").child("name")
@@ -205,6 +228,7 @@ private fun getUserData(uid: String, navController: NavHostController) {
 
                 userNameRef.addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
+                        loading.value = false
                         val name = snapshot.getValue(String::class.java)
                         if (name != null) {
                             UserInfo.userName = name
