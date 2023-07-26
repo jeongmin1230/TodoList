@@ -1,10 +1,10 @@
 package com.todo.todolist.screen
 
 import android.app.Activity
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -56,10 +56,20 @@ class Login : ComponentActivity() {
 fun Screen() {
     val context = LocalContext.current
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = "login") {
-        composable("login") {
+    val loading = remember { mutableStateOf(false) }
+
+    val userEmail = getStoredUserEmail(context)
+    val userPassword = getStoredUserPassword(context)
+
+    NavHost(navController = navController, startDestination = "start") {
+        composable("start") {
             Column {
-                LoginScreen(navController)
+                if(userEmail.isNotEmpty() && userPassword.isNotEmpty()) {
+                    loginUser(context as Activity, navController, userEmail, userPassword, loading)
+                }
+                else {
+                    LoginScreen(navController, loading)
+                }
             }
         }
 
@@ -89,8 +99,7 @@ fun Screen() {
 }
 
 @Composable
-fun LoginScreen(navController: NavHostController) {
-    val loading = remember { mutableStateOf(false) }
+fun LoginScreen(navController: NavHostController, loading: MutableState<Boolean>) {
     val context = LocalContext.current
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.to_do))
     val progress by animateLottieCompositionAsState(composition = composition, iterations = LottieConstants.IterateForever)
@@ -99,6 +108,9 @@ fun LoginScreen(navController: NavHostController) {
     var password by remember { mutableStateOf("") }
     Spacer(modifier = Modifier.height(40.dp))
     Box {
+        Box(Modifier.align(Alignment.Center)) {
+            Loading(loading)
+        }
         Column(Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally) {
             Box(modifier = Modifier.size(200.dp)) {
@@ -107,6 +119,7 @@ fun LoginScreen(navController: NavHostController) {
                     progress = progress,
                 )
             }
+
             TextField(
                 value = email,
                 singleLine = true,
@@ -183,42 +196,25 @@ fun LoginScreen(navController: NavHostController) {
 
 }
 
-@Composable
-fun Loading(loading: MutableState<Boolean>) {
-    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loading))
-    val progress by animateLottieCompositionAsState(composition = composition, iterations = LottieConstants.IterateForever)
-
-    if(loading.value) {
-        Box(modifier = Modifier
-            .size(250.dp)
-            .background(Color.Transparent)
-        ) {
-            LottieAnimation(
-                composition = composition,
-                progress = progress,
-            )
-        }
-    }
-}
 
 private fun loginUser(activity: Activity, navController: NavHostController, email: String, password: String, loading: MutableState<Boolean>) {
-    loading.value = true
     val auth = FirebaseAuth.getInstance()
     auth.signInWithEmailAndPassword(email.trim(), password.trim())
         .addOnCompleteListener(activity) { task ->
             if (task.isSuccessful) {
                 val uid = auth.currentUser?.uid ?: ""
-                getUserData(uid, navController, loading)
+                getUserData(activity, uid, navController, loading)
             } else {
                 println(task.exception)
             }
         }
 }
 
-private fun getUserData(uid: String, navController: NavHostController, loading: MutableState<Boolean>) {
+private fun getUserData(activity: Activity, uid: String, navController: NavHostController, loading: MutableState<Boolean>) {
     val userUid = FirebaseDatabase.getInstance().getReference("users")
     val userEmailRef = userUid.child(uid).child("info").child("email")
     val userNameRef = userUid.child(uid).child("info").child("name")
+    val userPasswordRef = userUid.child(uid).child("info").child("password")
 
     userEmailRef.addListenerForSingleValueEvent(object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
@@ -228,10 +224,23 @@ private fun getUserData(uid: String, navController: NavHostController, loading: 
 
                 userNameRef.addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
-                        loading.value = false
                         val name = snapshot.getValue(String::class.java)
                         if (name != null) {
                             UserInfo.userName = name
+                            userPasswordRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                                override fun onDataChange(snapshot: DataSnapshot) {
+                                    val password = snapshot.getValue(Long::class.java)
+                                    loading.value = false
+                                    if (password != null) {
+                                        storeUserCredentials(activity, email, password.toString())
+                                        UserInfo.userPassword = password.toString()
+                                    }
+                                }
+
+                                override fun onCancelled(error: DatabaseError) {
+                                }
+
+                            })
                             if (UserInfo.userEmail.isNotEmpty() && UserInfo.userName.isNotEmpty()) {
                                 navController.navigate("home")
                             }
@@ -247,4 +256,12 @@ private fun getUserData(uid: String, navController: NavHostController, loading: 
         override fun onCancelled(error: DatabaseError) {
         }
     })
+}
+
+private fun storeUserCredentials(activity: Activity, email: String, password: String) {
+    val sharedPreferences = activity.getSharedPreferences("UserCredentials", Context.MODE_PRIVATE)
+    val editor = sharedPreferences.edit()
+    editor.putString("email", email)
+    editor.putString("password", password)
+    editor.apply()
 }
