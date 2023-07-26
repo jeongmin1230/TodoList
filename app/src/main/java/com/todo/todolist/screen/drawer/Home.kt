@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
@@ -30,14 +31,18 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.todo.todolist.R
+import com.todo.todolist.UserInfo
 import com.todo.todolist.screen.ConfirmDialog
+import com.todo.todolist.screen.getStoredUserEmail
+import com.todo.todolist.screen.getStoredUserPassword
 
 enum class BounceState { Pressed, Released }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen() {
-
+    val context = LocalContext.current
+    UserInfo.userEmail = getStoredUserEmail(context)
+    UserInfo.userPassword = getStoredUserPassword(context)
     val todoListState = remember { mutableStateOf(emptyList<String>()) }
     val doneTodoListState = remember { mutableStateOf(emptyList<String>()) }
 
@@ -164,7 +169,7 @@ fun EachList(isDone: Boolean, eachName:String, type: Boolean, image: ImageVector
         }
         .combinedClickable(
             onClick = {
-                if(!isDone) doneTodo(eachName)
+                if (!isDone) doneTodo(eachName)
                 else cancelDone(eachName)
             },
             onLongClick = { showConfirmDialog = true }

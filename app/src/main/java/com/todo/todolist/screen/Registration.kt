@@ -173,7 +173,7 @@ private fun performSignup(errorString: Array<String>, errorMessage: Array<String
     auth.createUserWithEmailAndPassword(email, password)
         .addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                createDatabase(name, email)
+                createDatabase(name, email, password)
                 navController.navigate("second")
             } else {
                 println(task.exception)
@@ -190,11 +190,12 @@ private fun performSignup(errorString: Array<String>, errorMessage: Array<String
         }
 }
 
-private fun createDatabase(name: String, email: String) {
+private fun createDatabase(name: String, email: String, password: String) {
     val uid = FirebaseAuth.getInstance().currentUser?.uid
     val usersRef = FirebaseDatabase.getInstance().getReference("users")
     val userRef = usersRef.child(uid.toString()).child("info")
 
     userRef.child("name").setValue(name)
     userRef.child("email").setValue(email)
+    userRef.child("password").setValue(password)
 }

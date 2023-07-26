@@ -1,5 +1,6 @@
 package com.todo.todolist.screen.drawer
 
+import android.content.Context
 import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -71,10 +72,19 @@ fun SettingScreen() {
                 FirebaseAuth.getInstance().signOut()
                 val intent = Intent(context, Login::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                storeUserCredentials(context)
                 context.startActivity(intent)
                 Toast.makeText(context, context.getString(R.string.logout_apply), Toast.LENGTH_SHORT).show()
             },
             dismissAction = {showConfirmDialog = false}
         )
     }
+}
+
+private fun storeUserCredentials(context: Context) {
+    val sharedPreferences = context.getSharedPreferences("UserCredentials", Context.MODE_PRIVATE)
+    val editor = sharedPreferences.edit()
+    editor.remove("email")
+    editor.remove("password")
+    editor.apply()
 }
