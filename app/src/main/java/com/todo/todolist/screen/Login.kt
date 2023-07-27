@@ -1,6 +1,7 @@
 package com.todo.todolist.screen
 
 import android.app.Activity
+import android.content.Context
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -56,11 +57,26 @@ class Login : ComponentActivity() {
 fun Screen() {
     val context = LocalContext.current
     val navController = rememberNavController()
+    val loading = remember { mutableStateOf(false) }
 
-    NavHost(navController = navController, startDestination = "login") {
-        composable("login") {
-            Column {
-                LoginScreen(navController)
+    val userEmail = getStoredUserEmail(context)
+    val userPassword = getStoredUserPassword(context)
+
+    NavHost(navController = navController, startDestination = "start") {
+        composable("start") {
+            Box {
+                Column(modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally) {
+                    if(userEmail.isNotEmpty() && userPassword.isNotEmpty()) {
+                        loading.value = true
+                        Loading(loading)
+                        loginUser(context as Activity, navController, userEmail, userPassword, loading)
+                        loading.value = false
+                    }
+                    else {
+                        LoginScreen(navController, loading)
+                    }
+                }
             }
         }
 
@@ -90,7 +106,7 @@ fun Screen() {
 }
 
 @Composable
-fun LoginScreen(navController: NavHostController) {
+fun LoginScreen(navController: NavHostController, loading: MutableState<Boolean>) {
     val context = LocalContext.current
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.to_do))
     val progress by animateLottieCompositionAsState(composition = composition, iterations = LottieConstants.IterateForever)
@@ -98,109 +114,127 @@ fun LoginScreen(navController: NavHostController) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     Spacer(modifier = Modifier.height(40.dp))
-    Column(Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally) {
-        Box(modifier = Modifier.size(200.dp)) {
-            LottieAnimation(
-                composition = composition,
-                progress = progress,
-            )
-        }
-        TextField(
-            value = email,
-            singleLine = true,
-            onValueChange = {email = it},
-            placeholder = {
-                Text(text = stringResource(id = R.string.email),
-                    style = MaterialTheme.typography.bodyMedium)
-            },
-            colors = TextFieldDefaults.textFieldColors(
-                containerColor = Color.LightGray,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                disabledIndicatorColor = Color.Transparent
-            ),
-            shape = RoundedCornerShape(12.dp),
-            modifier = Modifier
-                .padding(horizontal = 8.dp)
-                .fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Email,
-                imeAction = ImeAction.Next)
-        )
-        Spacer(modifier = Modifier.height(20.dp))
-        TextField(
-            value = password,
-            singleLine = true,
-            onValueChange = {password = it},
-            placeholder = {
-                Text(text = stringResource(id = R.string.password),
-                    style = MaterialTheme.typography.bodyMedium)
-            },
-            visualTransformation = PasswordVisualTransformation('*'),
-            colors = TextFieldDefaults.textFieldColors(
-                containerColor = Color.LightGray,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                disabledIndicatorColor = Color.Transparent
-            ),
-            shape = RoundedCornerShape(12.dp),
-            modifier = Modifier
-                .padding(horizontal = 8.dp)
-                .fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Done
-            )
-        )
-        Spacer(modifier = Modifier.height(20.dp))
-        Button(
-            enabled = email.isNotEmpty() && password.isNotEmpty(),
-            onClick = { loginUser(context as Activity, navController, email, password) },
-            modifier = Modifier
-                .padding(horizontal = 8.dp)
-                .fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                disabledContainerColor = Color.LightGray
-            ),
-        ) {
-            Text(text = stringResource(id = R.string.login))
-        }
-        Spacer(modifier = Modifier.height(20.dp))
-        Row(verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center) {
-            Text(text = stringResource(id = R.string.reset_password),
+    Box {
+        Column(modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally) {
+            Box(modifier = Modifier.size(200.dp)) {
+                LottieAnimation(
+                    composition = composition,
+                    progress = progress,
+                )
+            }
+
+            TextField(
+                value = email,
+                singleLine = true,
+                onValueChange = {email = it},
+                placeholder = {
+                    Text(text = stringResource(id = R.string.email),
+                        style = MaterialTheme.typography.bodyMedium)
+                },
+                colors = TextFieldDefaults.textFieldColors(
+                    containerColor = Color.LightGray,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent
+                ),
+                shape = RoundedCornerShape(12.dp),
                 modifier = Modifier
-                    .weight(1f)
-                    .clickable { navController.navigate(context.getString(R.string.reset_password)) },
-                style = MaterialTheme.typography.bodyMedium.copy(Color.Black, textAlign = TextAlign.Center))
-            Text(text = stringResource(id = R.string.registration),
+                    .padding(horizontal = 8.dp)
+                    .fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Email,
+                    imeAction = ImeAction.Next)
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+            TextField(
+                value = password,
+                singleLine = true,
+                onValueChange = {password = it},
+                placeholder = {
+                    Text(text = stringResource(id = R.string.password),
+                        style = MaterialTheme.typography.bodyMedium)
+                },
+                visualTransformation = PasswordVisualTransformation('*'),
+                colors = TextFieldDefaults.textFieldColors(
+                    containerColor = Color.LightGray,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent
+                ),
+                shape = RoundedCornerShape(12.dp),
                 modifier = Modifier
-                    .weight(1f)
-                    .clickable { navController.navigate(context.getString(R.string.registration)) },
-                style = MaterialTheme.typography.bodyMedium.copy(Color.Black, textAlign = TextAlign.Center))
+                    .padding(horizontal = 8.dp)
+                    .fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Done
+                )
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+            Button(
+                enabled = email.isNotEmpty() && password.isNotEmpty(),
+                onClick = {
+                    loading.value = true
+                    loginUser(context as Activity, navController, email, password, loading) },
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
+                    .fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    disabledContainerColor = Color.LightGray,
+                )) {
+                Text(text = stringResource(id = R.string.login))
+            }
+            Spacer(modifier = Modifier.height(20.dp))
+            Row(verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center) {
+                Text(text = stringResource(id = R.string.reset_password),
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable { navController.navigate(context.getString(R.string.reset_password)) },
+                    style = MaterialTheme.typography.bodyMedium.copy(Color.Black, textAlign = TextAlign.Center))
+                Text(text = stringResource(id = R.string.registration),
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable { navController.navigate(context.getString(R.string.registration)) },
+                    style = MaterialTheme.typography.bodyMedium.copy(Color.Black, textAlign = TextAlign.Center))
+            }
+            Spacer(modifier = Modifier.padding(bottom = 12.dp))
         }
-        Spacer(modifier = Modifier.padding(bottom = 12.dp))
+        Box(Modifier.align(Alignment.Center)) {
+            Loading(loading)
+        }
     }
 }
 
-private fun loginUser(activity: Activity, navController: NavHostController, email: String, password: String) {
+
+private fun loginUser(activity: Activity, navController: NavHostController, email: String, password: String, loading: MutableState<Boolean>) {
     val auth = FirebaseAuth.getInstance()
     auth.signInWithEmailAndPassword(email.trim(), password.trim())
         .addOnCompleteListener(activity) { task ->
             if (task.isSuccessful) {
-                val user = auth.currentUser
-                val uid = user?.uid ?: ""
-                getUserData(uid, navController)
-            } else println(task.exception)
+                val uid = auth.currentUser?.uid ?: ""
+                getUserData(activity, uid, navController, loading)
+            } else {
+                loading.value = false
+                val error = task.exception.toString()
+                if(error.contains(activity.getString(R.string.login_not_exists_email))){
+                    Toast.makeText(activity, activity.getString(R.string.login_not_exists_email_toast), Toast.LENGTH_SHORT).show()
+                }
+                if(error.contains(activity.getString(R.string.login_invalid_password))) {
+                    Toast.makeText(activity, activity.getString(R.string.login_invalid_password_toast), Toast.LENGTH_SHORT).show()
+                }
+                println(task.exception)
+            }
         }
 }
 
-private fun getUserData(uid: String, navController: NavHostController) {
+private fun getUserData(activity: Activity, uid: String, navController: NavHostController, loading: MutableState<Boolean>) {
     val userUid = FirebaseDatabase.getInstance().getReference("users")
     val userEmailRef = userUid.child(uid).child("info").child("email")
     val userNameRef = userUid.child(uid).child("info").child("name")
+    val userPasswordRef = userUid.child(uid).child("info").child("password")
 
     userEmailRef.addListenerForSingleValueEvent(object : ValueEventListener {
         override fun onDataChange(snapshot: DataSnapshot) {
@@ -213,7 +247,21 @@ private fun getUserData(uid: String, navController: NavHostController) {
                         val name = snapshot.getValue(String::class.java)
                         if (name != null) {
                             UserInfo.userName = name
+                            userPasswordRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                                override fun onDataChange(snapshot: DataSnapshot) {
+                                    val password = snapshot.getValue(Long::class.java)
+                                    if (password != null) {
+                                        storeUserCredentials(activity, email, password.toString())
+                                        UserInfo.userPassword = password.toString()
+                                    }
+                                }
+
+                                override fun onCancelled(error: DatabaseError) {
+                                }
+
+                            })
                             if (UserInfo.userEmail.isNotEmpty() && UserInfo.userName.isNotEmpty()) {
+                                loading.value = false
                                 navController.navigate("home")
                             }
                         }
@@ -228,4 +276,12 @@ private fun getUserData(uid: String, navController: NavHostController) {
         override fun onCancelled(error: DatabaseError) {
         }
     })
+}
+
+private fun storeUserCredentials(activity: Activity, email: String, password: String) {
+    val sharedPreferences = activity.getSharedPreferences("UserCredentials", Context.MODE_PRIVATE)
+    val editor = sharedPreferences.edit()
+    editor.putString("email", email)
+    editor.putString("password", password)
+    editor.apply()
 }
