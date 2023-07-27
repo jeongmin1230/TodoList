@@ -38,6 +38,7 @@
     <string name="yes">예</string>
     <string name="no">아니오</string>
     <string name="logout_apply">로그아웃 했습니다.</string>
+    <string name="auto_login">자동로그인</string>
 
     <string name="to_home">홈으로</string>
     <string name="to_add">할 일 추가</string>

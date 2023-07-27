@@ -1,9 +1,11 @@
 package com.todo.todolist
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -43,6 +45,13 @@ fun MainScreen() {
                     .fillMaxWidth()
             ) {
                 Column(Modifier.fillMaxWidth()) {
+                    Image(imageVector = ImageVector.vectorResource(id = R.drawable.ic_close),
+                        contentDescription = stringResource(id = R.string.ic_close),
+                        modifier = Modifier
+                            .clickable(interactionSource = MutableInteractionSource(), indication = null) { scope.launch { drawerState.close() } }
+                            .padding(top = 10.dp, end = 10.dp)
+                            .align(Alignment.End)
+                    )
                     Text(text = UserInfo.userName + stringResource(id = R.string.welcome),
                         style = MaterialTheme.typography.bodyMedium.copy(Color.Black),
                         modifier = Modifier.padding(start = 10.dp, top = 30.dp, bottom = 4.dp))
@@ -57,7 +66,7 @@ fun MainScreen() {
                                     scope.launch { drawerState.close() }
                                     drawerNavController.navigate(item.screenRoute)
                                 }
-                                .padding(vertical = 12.dp)
+                                .padding(all = 10.dp)
                                 .fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
@@ -78,7 +87,7 @@ fun MainScreen() {
                     contentDescription = null,
                     modifier = Modifier
                         .padding(start = 10.dp, top = 10.dp)
-                        .clickable { scope.launch { drawerState.open() } }
+                        .clickable(interactionSource = MutableInteractionSource(), indication = null) { scope.launch { drawerState.open() } }
                 )
                 NavHost(drawerNavController, startDestination = NavDrawer.Home.screenRoute) {
                     composable(NavDrawer.Home.screenRoute) {
