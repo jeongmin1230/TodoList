@@ -1,11 +1,9 @@
 package com.todo.todolist
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -26,7 +24,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun MainScreen() {
     val drawerNavController = rememberNavController()
-    val navController = rememberNavController()
 
     val scope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
@@ -45,19 +42,20 @@ fun MainScreen() {
                     .fillMaxWidth()
             ) {
                 Column(Modifier.fillMaxWidth()) {
-                    Image(imageVector = ImageVector.vectorResource(id = R.drawable.ic_close),
+                    Image(
+                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_close),
                         contentDescription = stringResource(id = R.string.ic_close),
                         modifier = Modifier
-                            .clickable(interactionSource = MutableInteractionSource(), indication = null) { scope.launch { drawerState.close() } }
-                            .padding(top = 10.dp, end = 10.dp)
+                            .padding(top = 4.dp, end = 4.dp)
                             .align(Alignment.End)
+                            .clickable { scope.launch { drawerState.close() } }
                     )
                     Text(text = UserInfo.userName + stringResource(id = R.string.welcome),
-                        style = MaterialTheme.typography.bodyMedium.copy(Color.Black),
-                        modifier = Modifier.padding(start = 10.dp, top = 30.dp, bottom = 4.dp))
+                        style = MaterialTheme.typography.bodyLarge.copy(Color.Black),
+                        modifier = Modifier.padding(top = 30.dp, start = 10.dp, bottom = 10.dp))
                     Text(text = UserInfo.userEmail,
-                        style = MaterialTheme.typography.bodySmall.copy(Color.Black.copy(0.5f)),
-                        modifier = Modifier.padding(start = 10.dp, top = 4.dp, bottom = 30.dp))
+                        style = MaterialTheme.typography.bodySmall.copy(Color.DarkGray),
+                        modifier = Modifier.padding(start = 10.dp, bottom = 30.dp))
                     Divider(Modifier.border(1.dp, Color.LightGray))
                     items.forEachIndexed { _, item ->
                         Row(
@@ -66,18 +64,18 @@ fun MainScreen() {
                                     scope.launch { drawerState.close() }
                                     drawerNavController.navigate(item.screenRoute)
                                 }
-                                .padding(all = 10.dp)
+                                .padding(start = 10.dp, top = 12.dp, bottom = 12.dp)
                                 .fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Image(
                                 imageVector = ImageVector.vectorResource(item.icon),
-                                contentDescription = stringResource(id = item.title))
+                                contentDescription = stringResource(id = item.title),
+                                modifier = Modifier.padding(end = 10.dp))
                             Text(text = stringResource(id = item.title))
                         }
                     }
                 }
-
             }
         },
         content = {
@@ -87,14 +85,14 @@ fun MainScreen() {
                     contentDescription = null,
                     modifier = Modifier
                         .padding(start = 10.dp, top = 10.dp)
-                        .clickable(interactionSource = MutableInteractionSource(), indication = null) { scope.launch { drawerState.open() } }
+                        .clickable { scope.launch { drawerState.open() } }
                 )
                 NavHost(drawerNavController, startDestination = NavDrawer.Home.screenRoute) {
                     composable(NavDrawer.Home.screenRoute) {
                         HomeScreen()
                     }
                     composable(NavDrawer.Add.screenRoute) {
-                        AddScreen(navController)
+                        AddScreen(drawerNavController)
                     }
                     composable(NavDrawer.Setting.screenRoute) {
                         SettingScreen()
