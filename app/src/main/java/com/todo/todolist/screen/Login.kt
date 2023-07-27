@@ -3,6 +3,7 @@ package com.todo.todolist.screen
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
@@ -63,12 +64,18 @@ fun Screen() {
 
     NavHost(navController = navController, startDestination = "start") {
         composable("start") {
-            Column {
-                if(userEmail.isNotEmpty() && userPassword.isNotEmpty()) {
-                    loginUser(context as Activity, navController, userEmail, userPassword, loading)
-                }
-                else {
-                    LoginScreen(navController, loading)
+            Box {
+                Column(modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally) {
+                    if(userEmail.isNotEmpty() && userPassword.isNotEmpty()) {
+                        loading.value = true
+                        Loading(loading)
+                        loginUser(context as Activity, navController, userEmail, userPassword, loading)
+                        loading.value = false
+                    }
+                    else {
+                        LoginScreen(navController, loading)
+                    }
                 }
             }
         }
@@ -108,10 +115,7 @@ fun LoginScreen(navController: NavHostController, loading: MutableState<Boolean>
     var password by remember { mutableStateOf("") }
     Spacer(modifier = Modifier.height(40.dp))
     Box {
-        Box(Modifier.align(Alignment.Center)) {
-            Loading(loading)
-        }
-        Column(Modifier.fillMaxSize(),
+        Column(modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally) {
             Box(modifier = Modifier.size(200.dp)) {
                 LottieAnimation(
@@ -168,12 +172,18 @@ fun LoginScreen(navController: NavHostController, loading: MutableState<Boolean>
                 )
             )
             Spacer(modifier = Modifier.height(20.dp))
-            Button(onClick = {
+            Button(
+                enabled = email.isNotEmpty() && password.isNotEmpty(),
+                onClick = {
                 loading.value = true
                 loginUser(context as Activity, navController, email, password, loading) },
                 modifier = Modifier
                     .padding(horizontal = 8.dp)
-                    .fillMaxWidth()) {
+                    .fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    disabledContainerColor = Color.LightGray,
+                )) {
                 Text(text = stringResource(id = R.string.login))
             }
             Spacer(modifier = Modifier.height(20.dp))
@@ -192,8 +202,10 @@ fun LoginScreen(navController: NavHostController, loading: MutableState<Boolean>
             }
             Spacer(modifier = Modifier.padding(bottom = 12.dp))
         }
+        Box(Modifier.align(Alignment.Center)) {
+            Loading(loading)
+        }
     }
-
 }
 
 
@@ -205,6 +217,14 @@ private fun loginUser(activity: Activity, navController: NavHostController, emai
                 val uid = auth.currentUser?.uid ?: ""
                 getUserData(activity, uid, navController, loading)
             } else {
+                loading.value = false
+                val error = task.exception.toString()
+                if(error.contains(activity.getString(R.string.login_not_exists_email))){
+                    Toast.makeText(activity, activity.getString(R.string.login_not_exists_email_toast), Toast.LENGTH_SHORT).show()
+                }
+                if(error.contains(activity.getString(R.string.login_invalid_password))) {
+                    Toast.makeText(activity, activity.getString(R.string.login_invalid_password_toast), Toast.LENGTH_SHORT).show()
+                }
                 println(task.exception)
             }
         }
@@ -230,7 +250,6 @@ private fun getUserData(activity: Activity, uid: String, navController: NavHostC
                             userPasswordRef.addListenerForSingleValueEvent(object : ValueEventListener {
                                 override fun onDataChange(snapshot: DataSnapshot) {
                                     val password = snapshot.getValue(Long::class.java)
-                                    loading.value = false
                                     if (password != null) {
                                         storeUserCredentials(activity, email, password.toString())
                                         UserInfo.userPassword = password.toString()
@@ -242,6 +261,7 @@ private fun getUserData(activity: Activity, uid: String, navController: NavHostC
 
                             })
                             if (UserInfo.userEmail.isNotEmpty() && UserInfo.userName.isNotEmpty()) {
+                                loading.value = false
                                 navController.navigate("home")
                             }
                         }

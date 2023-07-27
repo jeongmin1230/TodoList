@@ -30,7 +30,7 @@ fun Loading(loading: MutableState<Boolean>) {
 
     if(loading.value) {
         Box(modifier = Modifier
-            .size(250.dp)
+            .size(400.dp)
             .background(Color.Transparent)
         ) {
             LottieAnimation(
