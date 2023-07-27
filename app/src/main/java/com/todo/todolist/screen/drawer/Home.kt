@@ -4,12 +4,10 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.*
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -34,10 +32,8 @@ import com.todo.todolist.screen.ConfirmDialog
 
 enum class BounceState { Pressed, Released }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen() {
-
     val todoListState = remember { mutableStateOf(emptyList<String>()) }
     val doneTodoListState = remember { mutableStateOf(emptyList<String>()) }
 
@@ -83,6 +79,7 @@ fun HomeScreen() {
     todoRef.addValueEventListener(valueEventListener)
     doneTodoRef.addValueEventListener(doneEventListener)
 
+
     Column(modifier = Modifier
         .verticalScroll(rememberScrollState())
         .padding(top = 10.dp)) {
@@ -94,37 +91,6 @@ fun HomeScreen() {
         doneTodoListState.value.forEach { done ->
             EachList(true, done, false, ImageVector.vectorResource(id = R.drawable.ic_check))
         }
-    }
-}
-
-
-private fun doneTodo(todo: String) {
-    val uid = FirebaseAuth.getInstance().currentUser?.uid
-    val usersRef = FirebaseDatabase.getInstance().getReference("todo")
-    val todoRef = usersRef.child(uid.toString()).child("todo")
-    val completeRef = usersRef.child(uid.toString()).child("complete")
-    // todoRef에서 해당 todo 제거
-    todoRef.addListenerForSingleValueEvent(object : ValueEventListener {
-        override fun onDataChange(dataSnapshot: DataSnapshot) {
-            for (childSnapshot in dataSnapshot.children) {
-                val value = childSnapshot.getValue(String::class.java)
-                if (value == todo) {
-                    childSnapshot.ref.removeValue()
-                    break
-                }
-            }
-        }
-
-        override fun onCancelled(databaseError: DatabaseError) {
-            // 에러 처리 로직
-        }
-    })
-
-    // completeRef에 해당 todo 추가
-    val completeId = completeRef.push().key
-    if (completeId != null) {
-        val newCompleteRef = completeRef.child(completeId)
-        newCompleteRef.setValue(todo)
     }
 }
 
@@ -191,6 +157,35 @@ fun EachList(isDone: Boolean, eachName:String, type: Boolean, image: ImageVector
                 deleteTodo(eachName) }) {
             showConfirmDialog = false
         }
+    }
+}
+
+
+private fun doneTodo(todo: String) {
+    val uid = FirebaseAuth.getInstance().currentUser?.uid
+    val usersRef = FirebaseDatabase.getInstance().getReference("todo")
+    val todoRef = usersRef.child(uid.toString()).child("todo")
+    val completeRef = usersRef.child(uid.toString()).child("complete")
+    todoRef.addListenerForSingleValueEvent(object : ValueEventListener {
+        override fun onDataChange(dataSnapshot: DataSnapshot) {
+            for (childSnapshot in dataSnapshot.children) {
+                val value = childSnapshot.getValue(String::class.java)
+                if (value == todo) {
+                    childSnapshot.ref.removeValue()
+                    break
+                }
+            }
+        }
+
+        override fun onCancelled(databaseError: DatabaseError) {
+            // 에러 처리 로직
+        }
+    })
+
+    val completeId = completeRef.push().key
+    if (completeId != null) {
+        val newCompleteRef = completeRef.child(completeId)
+        newCompleteRef.setValue(todo)
     }
 }
 

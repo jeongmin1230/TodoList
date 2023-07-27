@@ -2,6 +2,7 @@ package com.todo.todolist.screen
 
 import android.app.Activity
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
@@ -98,7 +99,7 @@ fun LoginScreen(navController: NavHostController) {
     var password by remember { mutableStateOf("") }
     Spacer(modifier = Modifier.height(40.dp))
     Column(Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally) {
+        horizontalAlignment = Alignment.CenterHorizontally) {
         Box(modifier = Modifier.size(200.dp)) {
             LottieAnimation(
                 composition = composition,
@@ -112,7 +113,7 @@ fun LoginScreen(navController: NavHostController) {
             placeholder = {
                 Text(text = stringResource(id = R.string.email),
                     style = MaterialTheme.typography.bodyMedium)
-                },
+            },
             colors = TextFieldDefaults.textFieldColors(
                 containerColor = Color.LightGray,
                 focusedIndicatorColor = Color.Transparent,
@@ -126,7 +127,7 @@ fun LoginScreen(navController: NavHostController) {
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Next)
-            )
+        )
         Spacer(modifier = Modifier.height(20.dp))
         TextField(
             value = password,
@@ -135,7 +136,7 @@ fun LoginScreen(navController: NavHostController) {
             placeholder = {
                 Text(text = stringResource(id = R.string.password),
                     style = MaterialTheme.typography.bodyMedium)
-                          },
+            },
             visualTransformation = PasswordVisualTransformation('*'),
             colors = TextFieldDefaults.textFieldColors(
                 containerColor = Color.LightGray,
@@ -189,7 +190,8 @@ private fun loginUser(activity: Activity, navController: NavHostController, emai
     auth.signInWithEmailAndPassword(email.trim(), password.trim())
         .addOnCompleteListener(activity) { task ->
             if (task.isSuccessful) {
-                val uid = auth.currentUser?.uid ?: ""
+                val user = auth.currentUser
+                val uid = user?.uid ?: ""
                 getUserData(uid, navController)
             } else println(task.exception)
         }
