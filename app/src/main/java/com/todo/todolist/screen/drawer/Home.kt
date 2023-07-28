@@ -39,7 +39,7 @@ import com.todo.todolist.screen.getStoredUserPassword
 enum class BounceState { Pressed, Released }
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(clickAction: () -> Unit) {
     val context = LocalContext.current
     UserInfo.userEmail = getStoredUserEmail(context)
     UserInfo.userPassword = getStoredUserPassword(context)
@@ -88,17 +88,25 @@ fun HomeScreen() {
     todoRef.addValueEventListener(valueEventListener)
     doneTodoRef.addValueEventListener(doneEventListener)
 
-    Column(modifier = Modifier
-        .verticalScroll(rememberScrollState())
-        .padding(top = 10.dp)) {
-        ListName(stringResource(id = R.string.main_todo_list))
-        todoListState.value.forEach { todo ->
-            EachList(false, todo, true, ImageVector.vectorResource(id = R.drawable.ic_uncheck))
+    Column(Modifier.verticalScroll(rememberScrollState())) {
+        Image(
+            imageVector = ImageVector.vectorResource(id = R.drawable.ic_menu),
+            contentDescription = null,
+            modifier = Modifier
+                .padding(start = 10.dp, top = 10.dp)
+                .clickable { clickAction() }
+        )
+        Column(Modifier.padding(top = 10.dp)) {
+            ListName(stringResource(id = R.string.main_todo_list))
+            todoListState.value.forEach { todo ->
+                EachList(false, todo, true, ImageVector.vectorResource(id = R.drawable.ic_uncheck))
+            }
+            ListName(stringResource(id = R.string.main_done_list))
+            doneTodoListState.value.forEach { done ->
+                EachList(true, done, false, ImageVector.vectorResource(id = R.drawable.ic_check))
+            }
         }
-        ListName(stringResource(id = R.string.main_done_list))
-        doneTodoListState.value.forEach { done ->
-            EachList(true, done, false, ImageVector.vectorResource(id = R.drawable.ic_check))
-        }
+
     }
 }
 
@@ -108,7 +116,6 @@ private fun doneTodo(todo: String) {
     val usersRef = FirebaseDatabase.getInstance().getReference("todo")
     val todoRef = usersRef.child(uid.toString()).child("todo")
     val completeRef = usersRef.child(uid.toString()).child("complete")
-    // todoRef에서 해당 todo 제거
     todoRef.addListenerForSingleValueEvent(object : ValueEventListener {
         override fun onDataChange(dataSnapshot: DataSnapshot) {
             for (childSnapshot in dataSnapshot.children) {

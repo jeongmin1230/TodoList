@@ -31,7 +31,8 @@ fun MainScreen() {
     val items = listOf(
         NavDrawer.Home,
         NavDrawer.Add,
-        NavDrawer.Setting
+        NavDrawer.Setting,
+        NavDrawer.MyPage
     )
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -80,24 +81,21 @@ fun MainScreen() {
         },
         content = {
             Column(modifier = Modifier.fillMaxSize()) {
-                Image(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_menu),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(start = 10.dp, top = 10.dp)
-                        .clickable { scope.launch { drawerState.open() } }
-                )
                 NavHost(drawerNavController, startDestination = NavDrawer.Home.screenRoute) {
                     composable(NavDrawer.Home.screenRoute) {
-                        HomeScreen()
+                        HomeScreen { scope.launch { drawerState.open() } }
                     }
                     composable(NavDrawer.Add.screenRoute) {
                         AddScreen(drawerNavController)
                     }
                     composable(NavDrawer.Setting.screenRoute) {
-                        SettingScreen()
+                        SettingScreen(drawerNavController)
+                    }
+                    composable(NavDrawer.MyPage.screenRoute) {
+                        MyPageScreen(drawerNavController)
                     }
                 }
             }
-        })
+        }
+    )
 }

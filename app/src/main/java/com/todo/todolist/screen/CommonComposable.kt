@@ -51,10 +51,12 @@ fun AppBar(text: String, onBackClick: () -> Unit) {
         Image(imageVector = ImageVector.vectorResource(id = R.drawable.ic_back),
             contentDescription = stringResource(id = R.string.back_description),
             modifier = Modifier
-                .padding(horizontal = 12.dp)
+                .padding(start = 10.dp, top = 14.dp, end = 16.dp, bottom = 14.dp)
                 .clickable(interactionSource = MutableInteractionSource(), indication = null) { onBackClick() })
         Text(text = text,
-            style = MaterialTheme.typography.bodyLarge.copy(Color.Black))
+            style = MaterialTheme.typography.bodyLarge.copy(Color.Black),
+            modifier = Modifier.padding(end = 10.dp)
+        )
     }
 }
 

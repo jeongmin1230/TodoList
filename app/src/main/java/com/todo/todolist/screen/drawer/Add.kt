@@ -17,32 +17,33 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.todo.todolist.R
+import com.todo.todolist.screen.AppBar
 
 @Composable
 fun AddScreen(drawerNavController: NavHostController) {
     var todo by remember { mutableStateOf("") }
     Column {
-        Text(text = stringResource(id = R.string.add_todo),
-            style = MaterialTheme.typography.bodyMedium.copy(Color.Black))
-        TextField(
-            value = todo,
-            singleLine = true,
-            onValueChange = {todo = it},
-            colors = TextFieldDefaults.textFieldColors(containerColor = Color.LightGray, focusedIndicatorColor = Color.Transparent, unfocusedIndicatorColor = Color.Transparent, disabledIndicatorColor = Color.Transparent),
-            modifier = Modifier
-                .padding(horizontal = 10.dp)
-                .fillMaxWidth()
-        )
-
-        Button(onClick = {
-            drawerNavController.popBackStack()
-            addTodo(todo.trim())
-        }) {
-            Text(
-                text = stringResource(R.string.add_todo),
-                style = MaterialTheme.typography.bodyMedium.copy(textAlign = TextAlign.Center)
+        AppBar(text = stringResource(id = R.string.add_todo)) { drawerNavController.popBackStack() }
+        Column(Modifier.padding(horizontal = 10.dp)) {
+            TextField(
+                value = todo,
+                singleLine = true,
+                onValueChange = {todo = it},
+                colors = TextFieldDefaults.textFieldColors(containerColor = Color.LightGray, focusedIndicatorColor = Color.Transparent, unfocusedIndicatorColor = Color.Transparent, disabledIndicatorColor = Color.Transparent),
+                modifier = Modifier.fillMaxWidth()
             )
+
+            Button(onClick = {
+                drawerNavController.popBackStack()
+                addTodo(todo.trim())
+            }) {
+                Text(
+                    text = stringResource(R.string.add_todo),
+                    style = MaterialTheme.typography.bodyMedium.copy(textAlign = TextAlign.Center)
+                )
+            }
         }
+
     }
 }
 
