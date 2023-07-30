@@ -3,11 +3,9 @@ package com.todo.todolist.screen.drawer
 import android.content.Context
 import android.content.Intent
 import android.widget.Toast
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.border
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -32,18 +30,22 @@ fun SettingScreen(drawerController: NavHostController) {
         AppBar(text = stringResource(id = R.string.setting)) { drawerController.popBackStack() }
         Text(
             text = stringResource(id = R.string.app_version),
-            style = MaterialTheme.typography.bodyLarge.copy(Color.LightGray),
-            modifier = Modifier.fillMaxWidth()
+            style = MaterialTheme.typography.bodyLarge.copy(Color.Black),
+            modifier = Modifier
+                .background(Color.LightGray)
+                .fillMaxWidth()
         )
         Text(
             text = BuildConfig.VERSION_NAME,
-            style = MaterialTheme.typography.bodySmall.copy(Color.Black)
+            style = MaterialTheme.typography.bodySmall.copy(Color.Black),
+            modifier = Modifier.padding(bottom = 12.dp)
         )
-        Divider(modifier = Modifier.border(BorderStroke(1.dp, Color.LightGray)))
         Text(
             text = stringResource(id = R.string.user_state),
-            style = MaterialTheme.typography.bodyLarge.copy(Color.LightGray),
-            modifier = Modifier.fillMaxWidth()
+            style = MaterialTheme.typography.bodyLarge.copy(Color.Black),
+            modifier = Modifier
+                .background(Color.LightGray)
+                .fillMaxWidth()
         )
         Text(text = stringResource(id = R.string.logout),
             style = MaterialTheme.typography.bodySmall.copy(Color.Red),

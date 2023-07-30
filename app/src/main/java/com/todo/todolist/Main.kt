@@ -79,6 +79,7 @@ fun MainScreen() {
                 }
             }
         },
+        drawerContainerColor = Color.LightGray,
         content = {
             Column(modifier = Modifier.fillMaxSize()) {
                 NavHost(drawerNavController, startDestination = NavDrawer.Home.screenRoute) {
