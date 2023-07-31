@@ -82,8 +82,6 @@ private fun searchEmail(email: String) {
     findEmail.fetchSignInMethodsForEmail(email)
         .addOnCompleteListener { task ->
             if(task.isSuccessful) {
-                val signInMethods = task.result?.signInMethods
-                println("signInMethods $signInMethods")
                 val userUid = FirebaseAuth.getInstance().uid
                 println("uid $userUid")
                 FirebaseAuth.getInstance().sendPasswordResetEmail(email)
