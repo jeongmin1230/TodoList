@@ -36,9 +36,9 @@ fun SettingScreen(drawerController: NavHostController) {
                 .fillMaxWidth()
         )
         Text(
-            text = BuildConfig.VERSION_NAME,
-            style = MaterialTheme.typography.bodySmall.copy(Color.Black),
-            modifier = Modifier.padding(bottom = 12.dp)
+            text = stringResource(id = R.string.version) + " " + BuildConfig.VERSION_NAME,
+            style = MaterialTheme.typography.bodyLarge.copy(Color.Black),
+            modifier = Modifier.padding(start = 10.dp, bottom = 12.dp)
         )
         Text(
             text = stringResource(id = R.string.user_state),
@@ -48,8 +48,10 @@ fun SettingScreen(drawerController: NavHostController) {
                 .fillMaxWidth()
         )
         Text(text = stringResource(id = R.string.logout),
-            style = MaterialTheme.typography.bodySmall.copy(Color.Red),
-            modifier = Modifier.clickable { showConfirmDialog = true })
+            style = MaterialTheme.typography.bodyLarge.copy(Color.Red),
+            modifier = Modifier
+                .padding(start = 10.dp)
+                .clickable { showConfirmDialog = true })
     }
 
     if(showConfirmDialog) {

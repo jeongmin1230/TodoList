@@ -15,7 +15,7 @@ import com.todo.todolist.screen.AppBar
 
 @Composable
 fun MyPageScreen(drawerNavController: NavHostController) {
-    Column {
+    Column(modifier = Modifier.padding(start = 10.dp)) {
        AppBar(text = stringResource(id = R.string.my_page)) { drawerNavController.popBackStack()}
         Spacer(modifier = Modifier.height(20.dp))
         Row(Modifier.padding(bottom = 10.dp)) {

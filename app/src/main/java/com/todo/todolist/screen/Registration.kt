@@ -27,7 +27,6 @@ import com.todo.todolist.R
 
 @Composable
 fun RegistrationScreen(mainNavController: NavHostController) {
-    val menuComposition = stringArrayResource(R.array.composition)
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = "first") {

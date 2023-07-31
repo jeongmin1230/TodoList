@@ -4,12 +4,7 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.*
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -25,6 +20,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import com.airbnb.lottie.compose.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -50,6 +46,9 @@ fun HomeScreen(clickAction: () -> Unit) {
     val usersRef = FirebaseDatabase.getInstance().getReference("todo")
     val todoRef = usersRef.child(uid.toString()).child("todo")
     val doneTodoRef = usersRef.child(uid.toString()).child("complete")
+
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.empty_list))
+    val progress by animateLottieCompositionAsState(composition = composition, iterations = LottieConstants.IterateForever)
 
     // 데이터 변경 이벤트 리스너 등록
     val valueEventListener = object : ValueEventListener {
@@ -96,17 +95,36 @@ fun HomeScreen(clickAction: () -> Unit) {
                 .padding(start = 10.dp, top = 10.dp)
                 .clickable { clickAction() }
         )
-        Column(Modifier.padding(top = 10.dp)) {
-            ListName(stringResource(id = R.string.main_todo_list))
-            todoListState.value.forEach { todo ->
-                EachList(false, todo, true, ImageVector.vectorResource(id = R.drawable.ic_uncheck))
+        Column(Modifier.padding(top = 10.dp),) {
+            if(todoListState.value.isEmpty() && doneTodoListState.value.isEmpty()) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Box(modifier = Modifier.size(350.dp)) {
+                        LottieAnimation(
+                            composition = composition,
+                            progress = progress,
+                        )
+                    }
+                    Text(
+                        text = stringResource(id = R.string.empty_list),
+                        style = MaterialTheme.typography.bodyMedium.copy(Color.DarkGray)
+                    )
+                }
             }
-            ListName(stringResource(id = R.string.main_done_list))
-            doneTodoListState.value.forEach { done ->
-                EachList(true, done, false, ImageVector.vectorResource(id = R.drawable.ic_check))
+            else {
+                ListName(stringResource(id = R.string.main_todo_list))
+                todoListState.value.forEach { todo ->
+                    EachList(false, todo, true, ImageVector.vectorResource(id = R.drawable.ic_uncheck))
+                }
+                ListName(stringResource(id = R.string.main_done_list))
+                doneTodoListState.value.forEach { done ->
+                    EachList(true, done, false, ImageVector.vectorResource(id = R.drawable.ic_check))
+                }
             }
         }
-
     }
 }
 
@@ -132,7 +150,6 @@ private fun doneTodo(todo: String) {
         }
     })
 
-    // completeRef에 해당 todo 추가
     val completeId = completeRef.push().key
     if (completeId != null) {
         val newCompleteRef = completeRef.child(completeId)

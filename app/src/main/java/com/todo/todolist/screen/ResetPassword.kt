@@ -1,11 +1,8 @@
 package com.todo.todolist.screen
 
-import android.app.Activity
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -17,6 +14,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.todo.todolist.R
+import kotlinx.coroutines.launch
 
 @Composable
 fun ResetPasswordScreen(mainNavController: NavHostController) {
@@ -25,7 +23,7 @@ fun ResetPasswordScreen(mainNavController: NavHostController) {
     NavHost(navController = navController, startDestination = "first") {
         composable("first") {
             Column{
-                AppBar(stringResource(id = R.string.registration)) { mainNavController.popBackStack() }
+                AppBar(stringResource(id = R.string.reset_password)) { mainNavController.popBackStack() }
                 Spacer(modifier = Modifier.height(20.dp))
                 ResetPasswordFirst()
             }
@@ -36,6 +34,8 @@ fun ResetPasswordScreen(mainNavController: NavHostController) {
 @Composable
 fun ResetPasswordFirst() {
     var enterEmail by remember { mutableStateOf("") }
+
+    val scope = rememberCoroutineScope()
     Column {
         TextField(
             value = enterEmail,
@@ -55,6 +55,25 @@ fun ResetPasswordFirst() {
             }),
             placeholder = { Text(text = stringResource(id = R.string.enter_email_to_reset_password))}
         )
+        Button(
+            onClick = {
+                scope.launch {
+                    try {
+                        FirebaseAuth.getInstance().sendPasswordResetEmail(enterEmail)
+                    } catch (e: Exception) {
+                        println(e.message)
+                    }
+                }
+                      },
+            modifier = Modifier
+                .padding(horizontal = 10.dp)
+                .fillMaxWidth()
+        ) {
+            Text(
+                text = stringResource(id = R.string.send_email_for_reset_password),
+                style = MaterialTheme.typography.bodyMedium.copy(Color.White)
+            )
+        }
     }
 }
 
@@ -77,32 +96,4 @@ private fun searchEmail(email: String) {
                 println(task.exception)
             }
         }
-    /*println("재설정" + email)
-    FirebaseAuth.getInstance().fetchSignInMethodsForEmail(email)
-        .addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                val signInMethods = task.result?.signInMethods
-                if (!signInMethods.isNullOrEmpty()) {
-                    println(signInMethods)
-                    // 이메일 주소에 해당하는 사용자가 존재하는 경우
-                    val userUid = FirebaseAuth.getInstance().getUserByEmail(email)?.uid
-                    if (userUid != null) {
-                        // 비밀번호 재설정을 위해 사용자의 이메일 주소로 인증 메일 보내기
-                        FirebaseAuth.getInstance().sendPasswordResetEmail(email)
-                            .addOnCompleteListener { resetTask ->
-                                if (resetTask.isSuccessful) {
-                                    println("Password reset email sent successfully to $email")
-                                } else {
-                                    println("Failed to send password reset email: ${resetTask.exception?.message}")
-                                }
-                            }
-                    } else {
-                    }
-                } else {
-                    println("No user found for email: $email")
-                }
-            } else {
-                println("Failed to fetch sign-in methods for email: ${task.exception?.message}")
-            }
-        }*/
 }

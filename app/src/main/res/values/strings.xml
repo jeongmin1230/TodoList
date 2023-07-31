@@ -9,6 +9,7 @@
     <string name="login">로그인</string>
     <string name="find_id">아이디 찾기</string>
     <string name="reset_password">비밀번호 재설정</string>
+    <string name="send_email_for_reset_password">이메일 전송</string>
     <string name="registration">회원가입</string>
     <string name="sign_in_google">로그인</string>
     <string name="try_again">로그인을 다시 시도 해 주세요</string>
@@ -28,6 +29,7 @@
     <string name="welcome">님, 환영합니다.</string>
     <string name="main_todo_list">to do list</string>
     <string name="main_done_list">done list</string>
+    <string name="empty_list">기록 한 할 일이 없습니다.</string>
     <string name="do_delete">삭제하시겠습니까?</string>
     <string name="check_state">check state</string>
     <string name="user_state">사용자 정보</string>
@@ -35,6 +37,7 @@
     <string name="login_email">로그인 한 사용자 이메일</string>
     <string name="logout">로그아웃</string>
     <string name="app_version">앱 버전</string>
+    <string name="version">버전</string>
     <string name="do_logout">로그아웃 하겠습니까?</string>
     <string name="yes">예</string>
     <string name="no">아니오</string>
