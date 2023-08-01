@@ -110,7 +110,7 @@ fun HomeScreen(clickAction: () -> Unit) {
                     }
                     Text(
                         text = stringResource(id = R.string.empty_list),
-                        style = MaterialTheme.typography.bodyMedium.copy(Color.DarkGray)
+                        style = MaterialTheme.typography.bodyMedium.copy(Color.LightGray)
                     )
                 }
             }
