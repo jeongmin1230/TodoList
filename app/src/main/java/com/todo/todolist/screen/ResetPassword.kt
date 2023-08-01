@@ -33,14 +33,14 @@ fun ResetPasswordScreen(mainNavController: NavHostController) {
 
 @Composable
 fun ResetPasswordFirst() {
-    val enterEmail = remember { mutableStateOf("") }
+    var enterEmail by remember { mutableStateOf("") }
 
     val scope = rememberCoroutineScope()
     Column {
         TextField(
-            value = enterEmail.value,
+            value = enterEmail,
             singleLine = true,
-            onValueChange = {enterEmail.value = it},
+            onValueChange = {enterEmail = it},
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 10.dp),
@@ -56,7 +56,15 @@ fun ResetPasswordFirst() {
             placeholder = { Text(text = stringResource(id = R.string.enter_email_to_reset_password))}
         )
         Button(
-            onClick = { searchEmail(enterEmail) },
+            onClick = {
+                scope.launch {
+                    try {
+                        FirebaseAuth.getInstance().sendPasswordResetEmail(enterEmail)
+                    } catch (e: Exception) {
+                        println(e.message)
+                    }
+                }
+                      },
             modifier = Modifier
                 .padding(horizontal = 10.dp)
                 .fillMaxWidth()
@@ -69,26 +77,14 @@ fun ResetPasswordFirst() {
     }
 }
 
-private fun searchEmail(email: MutableState<String>) { // 재설정 방법 알아보긔
+private fun searchEmail(email: String) {
     val findEmail = FirebaseAuth.getInstance()
-    println("email.value :::: ${email.value}")
-    findEmail.sendPasswordResetEmail(email.value)
-        .addOnCompleteListener { task ->
-            if(task.isSuccessful) {
-                println(task.result)
-                println("send email to reset password")
-            }
-        }
-        .addOnFailureListener {
-            println(it.message)
-            println("fail")
-        }
-/*    findEmail.fetchSignInMethodsForEmail(email.value)
+    findEmail.fetchSignInMethodsForEmail(email)
         .addOnCompleteListener { task ->
             if(task.isSuccessful) {
                 val userUid = FirebaseAuth.getInstance().uid
                 println("uid $userUid")
-                FirebaseAuth.getInstance().sendPasswordResetEmail(email.value)
+                FirebaseAuth.getInstance().sendPasswordResetEmail(email)
                     .addOnCompleteListener { result ->
                         if(result.isSuccessful) {
                             println("result is successful ${result.result}") // 이곳 아무 값 없음..
@@ -97,5 +93,5 @@ private fun searchEmail(email: MutableState<String>) { // 재설정 방법 알�
             } else {
                 println(task.exception)
             }
-        }*/
+        }
 }
