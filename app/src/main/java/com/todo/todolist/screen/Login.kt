@@ -87,16 +87,6 @@ fun Screen() {
         }
 
         /** 텍스트 버튼 */
-        composable(context.getString(R.string.find_id)) {
-            Column {
-                FindIdScreen()
-            }
-        }
-        composable(context.getString(R.string.reset_password)) {
-            Column {
-                ResetPasswordScreen(navController)
-            }
-        }
         composable(context.getString(R.string.registration)) {
             Column {
                 RegistrationScreen(navController)
@@ -189,11 +179,6 @@ fun LoginScreen(navController: NavHostController, loading: MutableState<Boolean>
             Spacer(modifier = Modifier.height(20.dp))
             Row(verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center) {
-                Text(text = stringResource(id = R.string.reset_password),
-                    modifier = Modifier
-                        .weight(1f)
-                        .clickable { navController.navigate(context.getString(R.string.reset_password)) },
-                    style = MaterialTheme.typography.bodyMedium.copy(Color.Black, textAlign = TextAlign.Center))
                 Text(text = stringResource(id = R.string.registration),
                     modifier = Modifier
                         .weight(1f)
@@ -249,7 +234,7 @@ private fun getUserData(activity: Activity, uid: String, navController: NavHostC
                             UserInfo.userName = name
                             userPasswordRef.addListenerForSingleValueEvent(object : ValueEventListener {
                                 override fun onDataChange(snapshot: DataSnapshot) {
-                                    val password = snapshot.getValue(Long::class.java)
+                                    val password = snapshot.getValue(String::class.java)
                                     if (password != null) {
                                         storeUserCredentials(activity, email, password.toString())
                                         UserInfo.userPassword = password.toString()

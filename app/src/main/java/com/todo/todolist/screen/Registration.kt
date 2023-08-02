@@ -159,7 +159,7 @@ fun Complete(navController: NavHostController) {
                 progress = progress,
             )
         }
-        Button(onClick = { navController.navigate("login") }) {
+        Button(onClick = { navController.navigate("start") }) {
             Text(text = stringResource(id = R.string.do_login))
         }
     }
