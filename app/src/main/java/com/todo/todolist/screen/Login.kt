@@ -59,15 +59,15 @@ fun Screen() {
     val navController = rememberNavController()
     val loading = remember { mutableStateOf(false) }
 
-    val userEmail = getStoredUserEmail(context)
-    val userPassword = getStoredUserPassword(context)
+    val userEmail = remember { mutableStateOf(getStoredUserEmail(context))}
+    val userPassword = remember { mutableStateOf(getStoredUserPassword(context))}
 
     NavHost(navController = navController, startDestination = "start") {
         composable("start") {
             Box {
                 Column(modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally) {
-                    if(userEmail.isNotEmpty() && userPassword.isNotEmpty()) {
+                    if(userEmail.value.isNotEmpty() && userPassword.value.isNotEmpty()) {
                         loading.value = true
                         Loading(loading)
                         loginUser(context as Activity, navController, userEmail, userPassword, loading)
@@ -101,8 +101,8 @@ fun LoginScreen(navController: NavHostController, loading: MutableState<Boolean>
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.to_do))
     val progress by animateLottieCompositionAsState(composition = composition, iterations = LottieConstants.IterateForever)
 
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    val email = remember { mutableStateOf("") }
+    val password = remember { mutableStateOf("") }
     Spacer(modifier = Modifier.height(40.dp))
     Box {
         Column(modifier = Modifier.fillMaxSize(),
@@ -115,9 +115,9 @@ fun LoginScreen(navController: NavHostController, loading: MutableState<Boolean>
             }
 
             TextField(
-                value = email,
+                value = email.value,
                 singleLine = true,
-                onValueChange = {email = it},
+                onValueChange = {email.value = it},
                 placeholder = {
                     Text(text = stringResource(id = R.string.email),
                         style = MaterialTheme.typography.bodyMedium)
@@ -138,9 +138,9 @@ fun LoginScreen(navController: NavHostController, loading: MutableState<Boolean>
             )
             Spacer(modifier = Modifier.height(20.dp))
             TextField(
-                value = password,
+                value = password.value,
                 singleLine = true,
-                onValueChange = {password = it},
+                onValueChange = {password.value = it},
                 placeholder = {
                     Text(text = stringResource(id = R.string.password),
                         style = MaterialTheme.typography.bodyMedium)
@@ -163,7 +163,7 @@ fun LoginScreen(navController: NavHostController, loading: MutableState<Boolean>
             )
             Spacer(modifier = Modifier.height(20.dp))
             Button(
-                enabled = email.isNotEmpty() && password.isNotEmpty(),
+                enabled = email.value.isNotEmpty() && password.value.isNotEmpty(),
                 onClick = {
                     loading.value = true
                     loginUser(context as Activity, navController, email, password, loading) },
@@ -194,21 +194,26 @@ fun LoginScreen(navController: NavHostController, loading: MutableState<Boolean>
 }
 
 
-private fun loginUser(activity: Activity, navController: NavHostController, email: String, password: String, loading: MutableState<Boolean>) {
+private fun loginUser(activity: Activity, navController: NavHostController, email: MutableState<String>, password: MutableState<String>, loading: MutableState<Boolean>) {
     val auth = FirebaseAuth.getInstance()
-    auth.signInWithEmailAndPassword(email.trim(), password.trim())
+    auth.signInWithEmailAndPassword(email.value.trim(), password.value.trim())
         .addOnCompleteListener(activity) { task ->
             if (task.isSuccessful) {
                 val uid = auth.currentUser?.uid ?: ""
                 getUserData(activity, uid, navController, loading)
             } else {
                 loading.value = false
+                email.value = ""
+                password.value = ""
                 val error = task.exception.toString()
                 if(error.contains(activity.getString(R.string.login_not_exists_email))){
                     Toast.makeText(activity, activity.getString(R.string.login_not_exists_email_toast), Toast.LENGTH_SHORT).show()
                 }
                 if(error.contains(activity.getString(R.string.login_invalid_password))) {
                     Toast.makeText(activity, activity.getString(R.string.login_invalid_password_toast), Toast.LENGTH_SHORT).show()
+                }
+                if(error.contains(activity.getString(R.string.email_format))) {
+                    Toast.makeText(activity, activity.getString(R.string.login_email_badly_format), Toast.LENGTH_SHORT).show()
                 }
                 println(task.exception)
             }

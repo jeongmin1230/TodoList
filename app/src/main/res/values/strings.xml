@@ -15,6 +15,8 @@
     <string name="try_again">로그인을 다시 시도 해 주세요</string>
     <string name="login_not_exists_email">There is no user record</string>
     <string name="login_not_exists_email_toast">이미 탈퇴했거나 존재하지 않는 사용자입니다. 다시 확인 해 주세요.</string>
+    <string name="email_format">The email address is badly formatted.</string>
+    <string name="login_email_badly_format">이메일 형식이 올바르지 않습니다. 다시 확인 해 주세요.</string>
     <string name="login_invalid_password">password</string>
     <string name="login_invalid_password_toast">비밀번호가 알맞지 않습니다. 다시 확인 해 주세요.</string>
 
@@ -24,7 +26,6 @@
     <string name="enter_password_again">비밀번호를 다시 입력하세요</string>
     <string name="complete_registration">회원가입 완료</string>
     <string name="complete">완료</string>
-    <string name="enter_email_to_reset_password">비밀번호를 재설정 할 이메일을 입력하세요</string>
     <string name="ic_close">close</string>
     <string name="welcome">님, 환영합니다.</string>
     <string name="main_todo_list">to do list</string>
@@ -42,10 +43,15 @@
     <string name="yes">예</string>
     <string name="no">아니오</string>
     <string name="logout_apply">로그아웃 했습니다.</string>
+    <string name="todo">할 일</string>
+    <string name="enter_todo">해야 할 일을 입력하세요.</string>
+    <string name="deadline">마감일</string>
+    <string name="enter_deadline">마감일을 입력하세요.</string>
+    <string name="classification">분류</string>
+    <string name="enter_classification">분류를 선택하세요.</string>
 
     <string name="to_home">홈으로</string>
     <string name="to_add">할 일 추가</string>
-    <string name="enter_todo">할 일을 입력 하세요.</string>
     <string name="add_todo">추가</string>
     <string name="my_page">마이페이지</string>
     <string name="to_setting">설정으로</string>

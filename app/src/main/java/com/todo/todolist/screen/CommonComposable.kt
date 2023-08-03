@@ -5,9 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -58,6 +56,33 @@ fun AppBar(text: String, onBackClick: () -> Unit) {
             modifier = Modifier.padding(end = 10.dp)
         )
     }
+}
+
+
+@Composable
+fun TextFieldForm(hint: String, input: MutableState<String>, placeholder: String) {
+    Text(
+        text = hint,
+        style = MaterialTheme.typography.bodyMedium.copy(Color.DarkGray),
+        modifier = Modifier.padding(vertical = 10.dp)
+    )
+    TextField(
+        value = input.value,
+        singleLine = true,
+        onValueChange = {input.value = it},
+        placeholder = { TextFieldPlaceholder(placeholder)},
+        colors = TextFieldDefaults.textFieldColors(containerColor = Color.LightGray, focusedIndicatorColor = Color.Transparent, unfocusedIndicatorColor = Color.Transparent, disabledIndicatorColor = Color.Transparent),
+        modifier = Modifier.fillMaxWidth()
+    )
+    Spacer(modifier = Modifier.height(10.dp))
+}
+
+@Composable
+fun TextFieldPlaceholder(placeholder: String) {
+    Text(
+        text = placeholder,
+        style = MaterialTheme.typography.bodySmall.copy(Color.DarkGray)
+    )
 }
 
 @OptIn(ExperimentalComposeUiApi::class)

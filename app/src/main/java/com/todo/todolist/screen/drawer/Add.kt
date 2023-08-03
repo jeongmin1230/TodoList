@@ -1,8 +1,6 @@
 package com.todo.todolist.screen.drawer
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -18,25 +16,27 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.todo.todolist.R
 import com.todo.todolist.screen.AppBar
+import com.todo.todolist.screen.TextFieldForm
+import com.todo.todolist.screen.TextFieldPlaceholder
 
 @Composable
 fun AddScreen(drawerNavController: NavHostController) {
-    var todo by remember { mutableStateOf("") }
+    val todo = remember { mutableStateOf("") }
+    val deadline = remember { mutableStateOf("") }
+    val classification = remember { mutableStateOf("") }
     Column {
         AppBar(text = stringResource(id = R.string.add_todo)) { drawerNavController.popBackStack() }
         Column(Modifier.padding(horizontal = 10.dp)) {
-            TextField(
-                value = todo,
-                singleLine = true,
-                onValueChange = {todo = it},
-                colors = TextFieldDefaults.textFieldColors(containerColor = Color.LightGray, focusedIndicatorColor = Color.Transparent, unfocusedIndicatorColor = Color.Transparent, disabledIndicatorColor = Color.Transparent),
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Button(onClick = {
+            TextFieldForm(stringResource(id = R.string.todo), todo, stringResource(id = R.string.enter_todo))
+            TextFieldForm(stringResource(id = R.string.deadline), deadline, stringResource(id = R.string.enter_deadline))
+            TextFieldForm(stringResource(id = R.string.classification), classification, stringResource(id = R.string.enter_classification))
+            Button(
+                onClick = {
                 drawerNavController.popBackStack()
-                addTodo(todo.trim())
-            }) {
+                addTodo(todo.value.trim())
+            },
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 Text(
                     text = stringResource(R.string.add_todo),
                     style = MaterialTheme.typography.bodyMedium.copy(textAlign = TextAlign.Center)

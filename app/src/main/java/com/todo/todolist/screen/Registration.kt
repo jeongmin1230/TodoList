@@ -135,7 +135,7 @@ fun InputInformation(navController: NavHostController) {
         )
     }
     Spacer(modifier = Modifier.height(8.dp))
-    Button(enabled = name.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty() && confirmPassword.isNotEmpty(),
+    Button(enabled = name.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty() && confirmPassword.isNotEmpty() && (password == confirmPassword),
             onClick = { performSignup(errorString, errorMessage, context, navController, name, email, password) },
             modifier = Modifier
                 .padding(horizontal = 8.dp)
