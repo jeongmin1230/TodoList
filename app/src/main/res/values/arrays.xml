@@ -27,4 +27,9 @@
         <item>할 일을 입력 하세요.</item>
         <item>추가</item>
     </string-array>
+
+    <string-array name="classification_type">
+        <item>회사</item>
+        <item>개인</item>
+    </string-array>
 </resources>

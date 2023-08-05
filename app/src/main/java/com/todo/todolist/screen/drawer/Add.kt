@@ -1,12 +1,27 @@
 package com.todo.todolist.screen.drawer
 
+import android.annotation.SuppressLint
+import android.app.DatePickerDialog
+import android.icu.util.Calendar
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.google.firebase.auth.FirebaseAuth
@@ -16,34 +31,142 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.todo.todolist.R
 import com.todo.todolist.screen.AppBar
-import com.todo.todolist.screen.TextFieldForm
+import com.todo.todolist.screen.Mean
 import com.todo.todolist.screen.TextFieldPlaceholder
 
+@SuppressLint("ResourceType")
 @Composable
 fun AddScreen(drawerNavController: NavHostController) {
+    val context = LocalContext.current
     val todo = remember { mutableStateOf("") }
-    val deadline = remember { mutableStateOf("") }
+    val selectedDate = remember { mutableStateOf("") }
+    var columnSize by remember { mutableStateOf(Size.Zero) }
+    val classificationArray = stringArrayResource(id = R.array.classification_type)
+    val dropDownVisible = remember { mutableStateOf(false) }
     val classification = remember { mutableStateOf("") }
+    val calendar = Calendar.getInstance()
+    val datePickerDialog = DatePickerDialog(
+        context,
+        { _, year, month, dayOfMonth ->
+            selectedDate.value = "${year}년 ${month+1}월 ${dayOfMonth}일"
+        },
+        calendar.get(Calendar.YEAR),
+        calendar.get(Calendar.MONTH),
+        calendar.get(Calendar.DAY_OF_MONTH)
+    )
+
     Column {
         AppBar(text = stringResource(id = R.string.add_todo)) { drawerNavController.popBackStack() }
         Column(Modifier.padding(horizontal = 10.dp)) {
-            TextFieldForm(stringResource(id = R.string.todo), todo, stringResource(id = R.string.enter_todo))
-            TextFieldForm(stringResource(id = R.string.deadline), deadline, stringResource(id = R.string.enter_deadline))
-            TextFieldForm(stringResource(id = R.string.classification), classification, stringResource(id = R.string.enter_classification))
-            Button(
-                onClick = {
-                drawerNavController.popBackStack()
-                addTodo(todo.value.trim())
-            },
+            Mean(stringResource(id = R.string.todo))
+            TextField(
+                value = todo.value,
+                singleLine = true,
+                onValueChange = { todo.value = it },
+                placeholder = { TextFieldPlaceholder(stringResource(id = R.string.enter_todo)) },
+                colors = TextFieldDefaults.textFieldColors(
+                    containerColor = Color.LightGray,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent
+                ),
                 modifier = Modifier.fillMaxWidth()
-            ) {
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+            Mean(stringResource(id = R.string.deadline))
+            Column(modifier = Modifier
+                .background(Color.LightGray)
+                .fillMaxWidth()
+                .padding(start = 14.dp, top = 20.dp, bottom = 20.dp)
+                .clickable(
+                    interactionSource = MutableInteractionSource(),
+                    indication = null
+                ) { datePickerDialog.show() }) {
+                if (selectedDate.value.isEmpty()) {
+                    TextFieldPlaceholder(stringResource(id = R.string.enter_deadline))
+                } else {
+                    Text(
+                        text = selectedDate.value,
+                        style = MaterialTheme.typography.bodySmall.copy(Color.Black)
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(10.dp))
+            Mean(stringResource(id = R.string.classification))
+/*            Row(modifier = Modifier
+                .clickable { dropDownVisible.value = !dropDownVisible.value }
+                .padding(start = 14.dp, top = 20.dp, bottom = 20.dp)
+                .background(Color.LightGray)
+                .fillMaxWidth()) {
                 Text(
-                    text = stringResource(R.string.add_todo),
-                    style = MaterialTheme.typography.bodyMedium.copy(textAlign = TextAlign.Center)
+                    text = classificationString.value.ifEmpty { stringResource(id = R.string.enter_classification) },
+                    style = MaterialTheme.typography.bodySmall.copy(Color.Black),
+                    modifier = Modifier.weight(1f)
+                )
+                Image(
+                    imageVector =
+                    if(dropDownVisible.value) ImageVector.vectorResource(id = R.drawable.ic_dropdown_up)
+                    else ImageVector.vectorResource(id = R.drawable.ic_dropdown_down),
+                    contentDescription = stringResource(id = R.string.is_expanded))
+            }*/
+            Row(modifier = Modifier
+                .background(Color.LightGray)
+                .fillMaxWidth()
+                .padding(all = 16.dp)
+                .clickable(
+                    interactionSource = MutableInteractionSource(),
+                    indication = null
+                ) { dropDownVisible.value = !dropDownVisible.value }) {
+                Column(Modifier.weight(1f)) {
+                    classification.value.ifEmpty { TextFieldPlaceholder(stringResource(id = R.string.enter_classification)) }
+                }
+                Image(
+                    imageVector =
+                    if (dropDownVisible.value) ImageVector.vectorResource(id = R.drawable.ic_dropdown_up)
+                    else ImageVector.vectorResource(id = R.drawable.ic_dropdown_down),
+                    contentDescription = stringResource(id = R.string.is_expanded)
                 )
             }
+            MaterialTheme(shapes = MaterialTheme.shapes.copy(extraSmall = RoundedCornerShape(8.dp))) {
+                DropdownMenu(
+                    expanded = dropDownVisible.value,
+                    onDismissRequest = { dropDownVisible.value = false },
+                    modifier = Modifier
+                        .background(MaterialTheme.colorScheme.secondary)
+                        .width(with(LocalDensity.current) { columnSize.width.toDp() }),
+                    offset = DpOffset(0.dp, 8.dp)
+                ) {
+                    classificationArray.forEach { item ->
+                        DropdownMenuItem(
+                            onClick = {
+                                classification.value = item
+                                dropDownVisible.value = false
+                            },
+                            text = {
+                                Text(
+                                    text = item,
+                                    color = Color.Black,
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            }
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(10.dp))
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        drawerNavController.popBackStack()
+                        addTodo(todo.value.trim())
+                    },
+                ) {
+                    Text(
+                        text = stringResource(R.string.add_todo),
+                        style = MaterialTheme.typography.bodyMedium.copy(textAlign = TextAlign.Center)
+                    )
+                }
+            }
         }
-
     }
 }
 

@@ -115,13 +115,17 @@ fun HomeScreen(clickAction: () -> Unit) {
                 }
             }
             else {
-                ListName(stringResource(id = R.string.main_todo_list))
-                todoListState.value.forEach { todo ->
-                    EachList(false, todo, true, ImageVector.vectorResource(id = R.drawable.ic_uncheck))
+                if(todoListState.value.isNotEmpty()) {
+                    ListName(stringResource(id = R.string.main_todo_list))
+                    todoListState.value.forEach { todo ->
+                        EachList(false, todo, true, ImageVector.vectorResource(id = R.drawable.ic_uncheck))
+                    }
                 }
-                ListName(stringResource(id = R.string.main_done_list))
-                doneTodoListState.value.forEach { done ->
-                    EachList(true, done, false, ImageVector.vectorResource(id = R.drawable.ic_check))
+                if(doneTodoListState.value.isNotEmpty()) {
+                    ListName(stringResource(id = R.string.main_done_list))
+                    doneTodoListState.value.forEach { done ->
+                        EachList(true, done, false, ImageVector.vectorResource(id = R.drawable.ic_check))
+                    }
                 }
             }
         }

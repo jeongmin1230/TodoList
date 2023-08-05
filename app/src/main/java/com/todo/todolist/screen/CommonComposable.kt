@@ -58,14 +58,17 @@ fun AppBar(text: String, onBackClick: () -> Unit) {
     }
 }
 
+@Composable
+fun Mean(whatsMean: String) {
+    Text(
+        text = whatsMean,
+        style = MaterialTheme.typography.bodyMedium.copy(Color.DarkGray),
+        modifier = Modifier.padding(all = 10.dp)
+    )
+}
 
 @Composable
-fun TextFieldForm(hint: String, input: MutableState<String>, placeholder: String) {
-    Text(
-        text = hint,
-        style = MaterialTheme.typography.bodyMedium.copy(Color.DarkGray),
-        modifier = Modifier.padding(vertical = 10.dp)
-    )
+fun TextFieldForm(input: MutableState<String>, placeholder: String) {
     TextField(
         value = input.value,
         singleLine = true,
