@@ -93,78 +93,37 @@ fun AddScreen(drawerNavController: NavHostController) {
             }
             Spacer(modifier = Modifier.height(10.dp))
             Mean(stringResource(id = R.string.classification))
-/*            Row(modifier = Modifier
-                .clickable { dropDownVisible.value = !dropDownVisible.value }
-                .padding(start = 14.dp, top = 20.dp, bottom = 20.dp)
-                .background(Color.LightGray)
-                .fillMaxWidth()) {
-                Text(
-                    text = classificationString.value.ifEmpty { stringResource(id = R.string.enter_classification) },
-                    style = MaterialTheme.typography.bodySmall.copy(Color.Black),
-                    modifier = Modifier.weight(1f)
-                )
-                Image(
-                    imageVector =
-                    if(dropDownVisible.value) ImageVector.vectorResource(id = R.drawable.ic_dropdown_up)
-                    else ImageVector.vectorResource(id = R.drawable.ic_dropdown_down),
-                    contentDescription = stringResource(id = R.string.is_expanded))
-            }*/
-            Row(modifier = Modifier
+            Column(modifier = Modifier
                 .background(Color.LightGray)
                 .fillMaxWidth()
                 .padding(all = 16.dp)
-                .clickable(
-                    interactionSource = MutableInteractionSource(),
-                    indication = null
-                ) { dropDownVisible.value = !dropDownVisible.value }) {
-                Column(Modifier.weight(1f)) {
-                    classification.value.ifEmpty { TextFieldPlaceholder(stringResource(id = R.string.enter_classification)) }
-                }
-                Image(
-                    imageVector =
-                    if (dropDownVisible.value) ImageVector.vectorResource(id = R.drawable.ic_dropdown_up)
-                    else ImageVector.vectorResource(id = R.drawable.ic_dropdown_down),
-                    contentDescription = stringResource(id = R.string.is_expanded)
-                )
-            }
-            MaterialTheme(shapes = MaterialTheme.shapes.copy(extraSmall = RoundedCornerShape(8.dp))) {
-                DropdownMenu(
-                    expanded = dropDownVisible.value,
-                    onDismissRequest = { dropDownVisible.value = false },
-                    modifier = Modifier
-                        .background(MaterialTheme.colorScheme.secondary)
-                        .width(with(LocalDensity.current) { columnSize.width.toDp() }),
-                    offset = DpOffset(0.dp, 8.dp)
-                ) {
-                    classificationArray.forEach { item ->
-                        DropdownMenuItem(
-                            onClick = {
-                                classification.value = item
-                                dropDownVisible.value = false
-                            },
-                            text = {
-                                Text(
-                                    text = item,
-                                    color = Color.Black,
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                            }
+                .clickable(interactionSource = MutableInteractionSource(), indication = null) { dropDownVisible.value = true }) {
+                Box {
+                    Row{
+                        Column(Modifier.weight(1f)) {
+                            classification.value.ifEmpty { TextFieldPlaceholder(stringResource(id = R.string.enter_classification)) }
+                        }
+                        Image(
+                            imageVector =
+                            if (dropDownVisible.value) ImageVector.vectorResource(id = R.drawable.ic_dropdown_up)
+                            else ImageVector.vectorResource(id = R.drawable.ic_dropdown_down),
+                            contentDescription = stringResource(id = R.string.is_expanded)
                         )
                     }
                 }
-                Spacer(modifier = Modifier.height(10.dp))
-                Button(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = {
-                        drawerNavController.popBackStack()
-                        addTodo(todo.value.trim())
-                    },
-                ) {
-                    Text(
-                        text = stringResource(R.string.add_todo),
-                        style = MaterialTheme.typography.bodyMedium.copy(textAlign = TextAlign.Center)
-                    )
-                }
+            }
+            Spacer(modifier = Modifier.height(10.dp))
+            Button(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = {
+                    drawerNavController.popBackStack()
+                    addTodo(todo.value.trim())
+                },
+            ) {
+                Text(
+                    text = stringResource(R.string.add_todo),
+                    style = MaterialTheme.typography.bodyMedium.copy(textAlign = TextAlign.Center)
+                )
             }
         }
     }
